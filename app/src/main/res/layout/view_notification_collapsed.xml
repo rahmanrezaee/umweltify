@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+
+    android:padding="8dp">
+
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_below="@id/content_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+       <LinearLayout
+
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           android:orientation="horizontal">
+           <Button
+               android:layout_width="wrap_content"
+               android:background="@color/purple_200"
+               android:text="Home Address"
+
+               android:layout_weight="1"
+               android:layout_height="wrap_content"/>
+           <Button
+               android:layout_width="wrap_content"
+               android:text="Office Address"
+
+               android:layout_weight="1"
+               android:background="@color/purple_500"
+               android:layout_height="wrap_content"/>
+           <Button
+               android:layout_width="wrap_content"
+               android:text="Other Address"
+                android:layout_weight="1"
+               android:background="@color/purple_700"
+               android:textColor="@color/white"
+               android:layout_height="wrap_content"/>
+       </LinearLayout>
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/content_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Notification Sample App"
+        android:textAppearance="@style/TextAppearance.Compat.Notification.Title"
+        />
+
+</RelativeLayout>
