@@ -16,6 +16,10 @@ class RepositoryModule {
 
 
     @Provides
-    fun providesDbRepository(batteryDao: BatteryDao) = BatteryRepositoryImp(batteryDao)
+    @Singleton
+    fun provideDbRepository(batteryDao: BatteryDao): BatteryRepository {
+        return BatteryRepositoryImp(batteryDao)
+    }
+
 
 }

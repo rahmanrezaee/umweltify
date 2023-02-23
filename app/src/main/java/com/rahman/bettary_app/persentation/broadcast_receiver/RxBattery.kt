@@ -1,4 +1,4 @@
-package com.rahman.bettary_app.persentation.contentProvider
+package com.rahman.bettary_app.persentation.broadcast_receiver
 
 
 import android.content.BroadcastReceiver
@@ -6,34 +6,26 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
-import androidx.annotation.RequiresApi
 import io.reactivex.rxjava3.core.BackpressureStrategy
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.FlowableEmitter
-import java.io.*
-import java.util.concurrent.TimeUnit
 
 
 class RxBattery {
-
-
     companion object {
         const val UNKNOWN = -1
 
-
         @JvmStatic
-        fun observe(context: Context): Flowable<BatteryState> {
-
+        fun observe(context: Context): Flowable<BatteryStateBroadcast> {
             var receiver: BroadcastReceiver? = null
-
-            return Flowable.create<BatteryState>({ emitter ->
+            return Flowable.create({ emitter ->
                 receiver = createBroadcastReceiver(emitter)
                 context.registerReceiver(receiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
             }, BackpressureStrategy.BUFFER)
                 .doOnCancel { context.unregisterReceiver(receiver) }
         }
 
-        fun createBroadcastReceiver(emitter: FlowableEmitter<BatteryState>): BroadcastReceiver {
+        private fun createBroadcastReceiver(emitter: FlowableEmitter<BatteryStateBroadcast>): BroadcastReceiver {
 
             return object : BroadcastReceiver() {
                 override fun onReceive(
@@ -43,7 +35,6 @@ class RxBattery {
                     if (intent == null) {
                         return
                     }
-
                     val status: Int = intent.getIntExtra(BatteryManager.EXTRA_STATUS, UNKNOWN)
                     val plugged: Int = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, UNKNOWN)
                     val health: Int = intent.getIntExtra(BatteryManager.EXTRA_HEALTH, UNKNOWN)
@@ -56,7 +47,7 @@ class RxBattery {
                     val voltage: Int = intent.getIntExtra(BatteryManager.EXTRA_VOLTAGE, UNKNOWN)
 
                     emitter.onNext(
-                        BatteryState(
+                        BatteryStateBroadcast(
                             status,
                             plugged,
                             health,
@@ -72,12 +63,10 @@ class RxBattery {
             }
         }
     }
-
-
 }
 
 
-data class BatteryState(
+data class BatteryStateBroadcast(
     val statusCode: Int,
     val pluggedCode: Int,
     val healthCode: Int,

@@ -7,7 +7,7 @@ import com.rahman.bettary_app.db.entity.BatteryED
 
 @Database(
     entities = [BatteryED::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 

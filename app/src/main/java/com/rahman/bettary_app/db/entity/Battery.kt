@@ -6,10 +6,14 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "battery_usage")
 data class BatteryED(
-    @PrimaryKey val uid: Int,
-    @ColumnInfo(name = "voltage") val voltage: String?,
-    @ColumnInfo(name = "ampere") val ampere: String?,
-    @ColumnInfo(name = "watt") val watt: String?,
-    @ColumnInfo(name = "start_time") val startTime: String?,
-    @ColumnInfo(name = "end_time") val endTime: String?,
+    // auto generate primary key
+    @PrimaryKey(autoGenerate = true)
+    val uid: Int,
+    @ColumnInfo(name = "voltage") val voltage: Int?,
+    @ColumnInfo(name = "ampere") val ampere: Int?,
+    @ColumnInfo(name = "watt") val watt: Int?,
+    @ColumnInfo(name = "is_charging") val isCharging: Boolean?,
+    @ColumnInfo(name = "level") val level: Int?,
+    @ColumnInfo(name = "start_time") val startTime: Long,
+    @ColumnInfo(name = "end_time") val endTime: Long?,
 )

@@ -16,9 +16,6 @@ import com.rahman.bettary_app.persentation.routes.NavigationGraph
 @Composable
 fun Dashboard(nav: NavController) {
 
-
-
-
     val navController = rememberNavController()
     Scaffold(
         topBar = {

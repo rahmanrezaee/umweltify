@@ -4,7 +4,7 @@ enum class Routes{
     SplashScreen,
     LoginScreen,
     RegisterScreen,
-    HomeScreen,
+    Dashboard,
     DetailScreen;
 
     companion object {
@@ -13,9 +13,9 @@ enum class Routes{
                 SplashScreen.name -> SplashScreen
                 LoginScreen.name -> LoginScreen
                 RegisterScreen.name -> RegisterScreen
-                HomeScreen.name -> HomeScreen
+                Dashboard.name -> Dashboard
                 DetailScreen.name -> DetailScreen
-                null -> HomeScreen
+                null -> Dashboard
                 else -> throw IllegalArgumentException("Route $route Not Found")
             }
     }

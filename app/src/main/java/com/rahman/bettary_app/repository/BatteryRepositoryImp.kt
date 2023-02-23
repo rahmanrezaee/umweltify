@@ -8,9 +8,13 @@ import com.rahman.bettary_app.network.model.BatteryDtoMapper
 import com.rahman.bettary_app.repository.BatteryRepository
 import javax.inject.Inject
 
-class BatteryRepositoryImp @Inject constructor(private val dao: BatteryDao) : BatteryRepository {
+class BatteryRepositoryImp @Inject constructor (private val dao: BatteryDao) : BatteryRepository {
     override suspend fun insertOne(battery: BatteryED) {
         return dao.insert(battery)
+    }
+
+    override suspend fun getAll() : List<BatteryED> {
+        return dao.getAll();
     }
 
 }

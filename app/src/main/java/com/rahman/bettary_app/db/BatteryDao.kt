@@ -12,16 +12,6 @@ interface BatteryDao {
     @Query("SELECT * FROM battery_usage")
     fun getAll(): List<BatteryED>
 
-    @Query("SELECT * FROM battery_usage WHERE uid IN (:userIds)")
-    fun loadAllByIds(userIds: IntArray): List<BatteryED>
-
-    @Query(
-        "SELECT * FROM battery_usage WHERE first_name LIKE :first AND " +
-                "last_name LIKE :last LIMIT 1"
-    )
-    fun findByName(first: String, last: String): BatteryED
-
-
     @Insert
     fun insert(item: BatteryED)
 

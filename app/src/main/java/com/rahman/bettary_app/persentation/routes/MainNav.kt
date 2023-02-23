@@ -15,9 +15,12 @@ fun MainNav() {
 
     NavHost(
         navController = navController,
-        startDestination = Routes.HomeScreen.name ){
-        composable(Routes.HomeScreen.name){
+        startDestination = Routes.SplashScreen.name ){
+        composable(Routes.Dashboard.name){
             Dashboard(nav = navController)
+        }
+        composable(Routes.SplashScreen.name){
+                SplashScreen(nav = navController)
         }
     }
 }
