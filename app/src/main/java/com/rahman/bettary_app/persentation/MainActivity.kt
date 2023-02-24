@@ -77,12 +77,12 @@ class MainActivity : ComponentActivity() {
     private fun setupBatteryService() {
 
         Log.i("BaseApplication", "setupBatteryService: Start Service");
-        if (isMyServiceRunning(BatteryService::class.java)) {
-            stopService(Intent(this, BatteryService::class.java))
-            Toast.makeText(this, "Service is running", Toast.LENGTH_SHORT).show();
-        } else {
+        if (!isMyServiceRunning(BatteryService::class.java)) {
             startForegroundService(Intent(this, BatteryService::class.java))
             Toast.makeText(this, "Service is not running", Toast.LENGTH_SHORT).show();
+        } else {
+
+            Toast.makeText(this, "Service is running no need to stop", Toast.LENGTH_SHORT).show();
         }
 
     }

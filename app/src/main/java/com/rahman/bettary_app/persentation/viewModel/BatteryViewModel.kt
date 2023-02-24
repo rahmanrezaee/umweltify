@@ -15,13 +15,5 @@ import javax.inject.Inject
 class BatteryViewModel @Inject constructor(
     private val repository: BatteryRepository
 ) : ViewModel() {
-//
- val items: MutableState<List<BatteryED>> = mutableStateOf(listOf());
-//
-    init {
-       viewModelScope.launch {
-           var result = repository.getAll()
-           items.value = result
-       }
-   }
+
 }

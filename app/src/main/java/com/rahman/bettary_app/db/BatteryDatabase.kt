@@ -13,7 +13,6 @@ import com.rahman.bettary_app.db.entity.BatteryED
 
 abstract class BatteryDatabase : RoomDatabase() {
     abstract fun getBatteryDao(): BatteryDao
-
     companion object {
         const val DB_NAME = "battery.db"
     }

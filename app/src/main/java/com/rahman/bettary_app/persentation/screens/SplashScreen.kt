@@ -48,6 +48,12 @@ fun SplashScreen(nav: NavController = NavController(LocalContext.current)) {
 
 
     var context = LocalContext.current;
+    LaunchedEffect(key1 = true ){
+        delay(500L)
+
+            nav.navigate(Routes.Dashboard.name)
+
+    }
     Column(
         Modifier.fillMaxSize(),
         Arrangement.Center,

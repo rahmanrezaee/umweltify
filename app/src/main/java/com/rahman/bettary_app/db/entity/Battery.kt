@@ -12,6 +12,7 @@ data class BatteryED(
     @ColumnInfo(name = "voltage") val voltage: Int?,
     @ColumnInfo(name = "ampere") val ampere: Int?,
     @ColumnInfo(name = "watt") val watt: Int?,
+    @ColumnInfo(name = "group_id") val group: String?,
     @ColumnInfo(name = "is_charging") val isCharging: Boolean?,
     @ColumnInfo(name = "level") val level: Int?,
     @ColumnInfo(name = "start_time") val startTime: Long,
