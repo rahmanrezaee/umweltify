@@ -3,6 +3,7 @@ package com.rahman.bettary_app.persentation.service
 import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -13,6 +14,8 @@ import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.rahman.bettary_app.R
 import com.rahman.bettary_app.db.entity.BatteryED
+import com.rahman.bettary_app.persentation.AddressActivity
+import com.rahman.bettary_app.persentation.MainActivity
 import com.rahman.bettary_app.persentation.util.TimeUtility
 import com.rahman.educationinfo.repository.BatteryRepositoryImp
 import dagger.hilt.android.AndroidEntryPoint
@@ -63,21 +66,22 @@ class BatteryService : Service() {
         return super.onStartCommand(intent, flags, startId)
     }
 
-    private var isCharging: Boolean? = null
+    private var chargeState: BatteryStateBroadCast? = null
    private var groupId: String? = null
 
     @SuppressLint("CheckResult")
     private fun showChargingOptionNotification() {
 
         BatteryReceiver.observe(this).subscribeOn(Schedulers.io()).subscribe {
-            if (isCharging == null || isCharging != it) {
-                isCharging = it;
+
+            if (chargeState?.isCharging == null || chargeState?.isCharging != it.isCharging) {
+                chargeState = it;
                 groupId = UUID.randomUUID().toString();
                 updateNotification()
             }
         }
         Observable.interval(20, TimeUnit.SECONDS).subscribeOn(Schedulers.io()).subscribe {
-            if (isCharging != null)
+            if (chargeState?.isCharging != null)
                 updateNotification()
         }
 
@@ -87,15 +91,18 @@ class BatteryService : Service() {
 
         val currentNow = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW)
         val level = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
+//        val en = batteryManager.getIntProperty(BatteryManager.Batter)
+
+
         val voltage = batteryManager.getIntProperty(BatteryManager.BATTERY_HEALTH_OVER_VOLTAGE)
 
         serviceScope.launch {
             batteryRepositoryImp.insertOne(
                 BatteryED(
                     uid = System.currentTimeMillis().toInt(),
-                    voltage = voltage,
+                    voltage = chargeState?.voltage,
                     level = level,
-                    isCharging = isCharging,
+                    isCharging = chargeState?.isCharging,
                     group = groupId,
                     ampere = currentNow,
                     watt = currentNow,
@@ -104,14 +111,14 @@ class BatteryService : Service() {
                 )
             )
             val updatedNotification = notification
-                .setContentTitle("voltage: $currentNow")
+                .setContentTitle("volt: $currentNow")
                 .setSmallIcon(iconFor(level))
-                .setContentText("${if (isCharging!!) "Charging" else "UnCharging"} - $voltage - ${(currentNow * voltage)}")
+                .setContentText("Charging")
 
             notificationManager.notify(1, updatedNotification.build())
             Log.i(
                 "DatabaseLog",
-                "add New $currentNow $isCharging $groupId - ${TimeUtility.convertLongToTime(System.currentTimeMillis())}"
+                "add New $currentNow ${chargeState?.voltage} $groupId - ${TimeUtility.convertLongToTime(System.currentTimeMillis())}"
             )
         }
     }
@@ -120,6 +127,9 @@ class BatteryService : Service() {
 
         return R.drawable.charging000 + percent
     }
+
+
+
 
 
 

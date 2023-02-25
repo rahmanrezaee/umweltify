@@ -25,32 +25,37 @@ fun HomeChargingInfo() {
     Column() {
 
         Text(
-            text = if (batteryChargingVM.isCharging.value) "Charging" else "Dis Charged",
+            text = if (batteryChargingVM.chargeState.value?.isCharging == true) "Charging" else "Dis Charged",
             style = MaterialTheme.typography.h6,
             modifier = Modifier.padding(vertical = 10.dp)
         )
         Card() {
 
             Column(Modifier.padding(10.dp)) {
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "Battery Level"
+
+                batteryChargingVM.chargeState.value?.level?.let {
+
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Battery Level"
+                        )
+                        Text(text = "$it %")
+                    }
+                    LinearProgressIndicator(
+                        progress = it/100.0f,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(10.dp)
+                            .padding(bottom = 10.dp)
                     )
-                    Text(text = "50 %")
                 }
-                LinearProgressIndicator(
-                    progress = 0.5f,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(10.dp)
-                        .padding(bottom = 10.dp)
-                )
+
 
                 Row(
                     Modifier
@@ -60,7 +65,7 @@ fun HomeChargingInfo() {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(text = "Charge Current")
-                    Text(text = "1.2 W / ${batteryChargingVM.currentVoltage.value} mA")
+                    Text(text = "${String.format("%.1f", batteryChargingVM.chargeState.value?.voltage?.times(batteryChargingVM.currentVoltage.value)?.div(1000000.0))} W / ${batteryChargingVM.currentVoltage.value} mA")
                 }
                 LinearProgressIndicator(
                     progress = 0.4f,
@@ -80,7 +85,7 @@ fun HomeChargingInfo() {
                     Text(
                         text = "Voltage",
                     )
-                    Text(text = "${batteryChargingVM.voltage.value} mV")
+                    Text(text = "${batteryChargingVM.chargeState.value?.voltage} mV")
                 }
                 LinearProgressIndicator(
                     progress = 0.4f,
@@ -100,15 +105,17 @@ fun HomeChargingInfo() {
                     Text(
                         text = "Temperature",
                     )
-                    Text(text = "25.1 C")
+                    Text(text = "${batteryChargingVM.chargeState.value?.temperature?.div(10.0)} C")
                 }
-                LinearProgressIndicator(
-                    progress = 0.4f,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(10.dp)
-                        .padding(bottom = 10.dp)
-                )
+                batteryChargingVM.chargeState.value?.temperature?.div(1000.0)?.let {
+                    LinearProgressIndicator(
+                        progress = it.toFloat(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(10.dp)
+                            .padding(bottom = 10.dp)
+                    )
+                }
             }
 
         }

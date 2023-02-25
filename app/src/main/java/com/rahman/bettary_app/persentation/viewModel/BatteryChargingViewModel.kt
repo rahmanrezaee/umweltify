@@ -14,6 +14,7 @@ import androidx.lifecycle.viewModelScope
 import com.rahman.bettary_app.db.entity.BatteryED
 import com.rahman.bettary_app.persentation.BaseApplication
 import com.rahman.bettary_app.persentation.service.BatteryReceiver
+import com.rahman.bettary_app.persentation.service.BatteryStateBroadCast
 import com.rahman.bettary_app.repository.BatteryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.core.Observable
@@ -34,7 +35,7 @@ class BatteryChargingViewModel @Inject constructor(
 
 ) : ViewModel() {
 
-    var isCharging : MutableState<Boolean> =  mutableStateOf(false);
+    var chargeState : MutableState<BatteryStateBroadCast?> =  mutableStateOf(null);
     var currentVoltage : MutableState<Int> =  mutableStateOf(0);
     var voltage : MutableState<Int> =  mutableStateOf(0);
 
@@ -45,7 +46,7 @@ class BatteryChargingViewModel @Inject constructor(
     init {
 
         snapshotFlow {
-            isCharging.value
+            chargeState.value?.isCharging
         }.onEach {
             Log.i("BatteryReceiver","snapshotFlow Changed")
 //            items.value = repository.getGroup();
@@ -57,7 +58,7 @@ class BatteryChargingViewModel @Inject constructor(
         BatteryReceiver.observe(application).subscribeOn(Schedulers.io()).subscribe {
 
 
-            isCharging.value = it;
+            chargeState.value = it;
             Log.i("BatteryReceiver","Charging Changed")
         }
 
