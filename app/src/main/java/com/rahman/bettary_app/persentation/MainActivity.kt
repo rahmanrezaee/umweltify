@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -13,27 +12,21 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.ContextCompat
 import com.google.accompanist.permissions.*
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.rahman.bettary_app.persentation.routes.MainNav
-import com.rahman.bettary_app.persentation.routes.Routes
 import com.rahman.bettary_app.persentation.service.BatteryService
+import com.rahman.bettary_app.persentation.service.HeadsUpNotificationService
 import com.rahman.bettary_app.persentation.theme.Bettary_appTheme
 import com.rahman.bettary_app.persentation.viewModel.BatteryViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -76,12 +69,16 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setupBatteryService() {
 
+
+//
+//        val intent = Intent(this, HeadsUpNotificationService::class.java)
+//        startForegroundService(intent)
+
         Log.i("BaseApplication", "setupBatteryService: Start Service");
         if (!isMyServiceRunning(BatteryService::class.java)) {
             startForegroundService(Intent(this, BatteryService::class.java))
             Toast.makeText(this, "Service is not running", Toast.LENGTH_SHORT).show();
         } else {
-
             Toast.makeText(this, "Service is running no need to stop", Toast.LENGTH_SHORT).show();
         }
 
