@@ -4,18 +4,25 @@ import android.annotation.SuppressLint
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.content.SharedPreferences
 import android.os.BatteryManager
 import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
+import android.provider.Settings
 import android.util.Log
 import android.widget.RemoteViews
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.rahman.bettary_app.R
+import com.rahman.bettary_app.db.entity.AddressED
 import com.rahman.bettary_app.db.entity.BatteryED
+import com.rahman.bettary_app.domain.model.BatteryModel
 import com.rahman.bettary_app.persentation.AddressActivity
+import com.rahman.bettary_app.persentation.BaseApplication
 import com.rahman.bettary_app.persentation.util.TimeUtility
-import com.rahman.educationinfo.repository.BatteryRepositoryImp
+import com.rahman.bettary_app.repository.BatteryRepositoryImp
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -34,16 +41,33 @@ class BatteryService : Service() {
     @Inject
     lateinit var batteryRepositoryImp: BatteryRepositoryImp
 
+    @Inject
+    lateinit var baseContext: BaseApplication
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
+
+    private lateinit var deviceId: String
+
     private lateinit var notification: NotificationCompat.Builder
     private lateinit var notificationManager: NotificationManager
     private lateinit var batteryManager: BatteryManager
+    private lateinit var context: Context;
+    private  var addressId:Int = -1;
+
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
+
+    @SuppressLint("HardwareIds")
     override fun onCreate() {
         super.onCreate()
+        context = this;
         batteryManager = getSystemService(Context.BATTERY_SERVICE) as BatteryManager;
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        deviceId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
+
+
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -60,11 +84,30 @@ class BatteryService : Service() {
             .setCategory(NotificationCompat.CATEGORY_ALARM).setWhen(System.currentTimeMillis())
         startForeground(1, notification.build());
         showChargingOptionNotification()
+        listenToAddressBroadCast()
         return super.onStartCommand(intent, flags, startId)
     }
 
+    private fun listenToAddressBroadCast() {
+
+        var connectionBroadcastReceiver = object : AddressActionReceiver() {
+            override fun broadcastResult(address: Int) {
+
+                with (sharedPreferences.edit()) {
+                    putInt(getString(R.string.address_key), address)
+                    apply()
+                }
+
+                Toast.makeText(context,"Custom address $address", Toast.LENGTH_SHORT).show()
+            }
+        }
+        val intentFilter = IntentFilter()
+        intentFilter.addAction(BroadCastConst.addressIntent)
+        this.registerReceiver(connectionBroadcastReceiver, intentFilter)
+
+    }
     private var chargeState: BatteryStateBroadCast? = null
-   private var groupId: String? = null
+    private var groupId: String? = null
 
     @SuppressLint("CheckResult")
     private fun showChargingOptionNotification() {
@@ -79,6 +122,9 @@ class BatteryService : Service() {
                 if(chargeState?.isCharging != null && it.isCharging){
                     showSelectLocationNotification()
                 }
+                if(chargeState?.isCharging != null){
+                    sendBackgroundData()
+                }
                 chargeState = it;
                 groupId = UUID.randomUUID().toString();
                 updateNotification()
@@ -90,6 +136,26 @@ class BatteryService : Service() {
         Observable.interval(20, TimeUnit.SECONDS).subscribeOn(Schedulers.io()).subscribe {
             if (chargeState?.isCharging != null)
                 updateNotification()
+        }
+
+    }
+
+    private fun sendBackgroundData() {
+
+        val batteryBody = BatteryModel(
+            userId = "",
+            averageVoltage = 4500.0,
+            latitude = 65.00000,
+            longitude = 54.3424233,
+            deviceId = deviceId,
+            deviceManufacture = Build.MANUFACTURER,
+            usageTo = "2022-12-05 00:20:00",
+            usageFrom = "2022-12-05 00:00:00",
+            averageMA = 2.34,
+            totalWh = 1.400
+        );
+        serviceScope.launch {
+            batteryRepositoryImp.insertToServer(batteryBody);
         }
 
     }
@@ -119,7 +185,6 @@ class BatteryService : Service() {
             .setSmallIcon(android.R.drawable.ic_delete)
             .setContentTitle("Select Address")
             .setContentText("Please Select a Address")
-            .setSubText("hello")
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setCategory(NotificationCompat.CATEGORY_CALL) // Use a full-screen intent only for the highest-priority alerts where you
@@ -135,10 +200,8 @@ class BatteryService : Service() {
 //                R.layout.view_notification_collapsed
 //            )
 //            customView.setTextViewText(R.id.name, "New Address")
-//
 //            notificationBuilder.setCustomBigContentView(customView)
 //            notificationBuilder.setCustomHeadsUpContentView(customView)
-//
 //        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -147,6 +210,12 @@ class BatteryService : Service() {
 
         // check have active notification
         notificationManager.notify(123,notificationBuilder.build())
+
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
 
 
     }
@@ -163,7 +232,6 @@ class BatteryService : Service() {
         serviceScope.launch {
             batteryRepositoryImp.insertOne(
                 BatteryED(
-                    uid = System.currentTimeMillis().toInt(),
                     voltage = chargeState?.voltage,
                     level = level,
                     isCharging = chargeState?.isCharging,
@@ -172,6 +240,7 @@ class BatteryService : Service() {
                     watt = currentNow,
                     startTime = System.currentTimeMillis(),
                     endTime = System.currentTimeMillis() + 10000,
+
                 )
             )
             val updatedNotification = notification

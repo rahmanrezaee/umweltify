@@ -1,8 +1,14 @@
 package com.rahman.bettary_app.di
 
+import android.content.SharedPreferences
+import com.rahman.bettary_app.db.AddressDao
 import com.rahman.bettary_app.db.BatteryDao
+import com.rahman.bettary_app.network.AppRequestService
+import com.rahman.bettary_app.persentation.BaseApplication
+import com.rahman.bettary_app.repository.AddressRepository
+import com.rahman.bettary_app.repository.AddressRepositoryImp
 import com.rahman.bettary_app.repository.BatteryRepository
-import com.rahman.educationinfo.repository.BatteryRepositoryImp
+import com.rahman.bettary_app.repository.BatteryRepositoryImp
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,8 +23,21 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideDbRepository(batteryDao: BatteryDao): BatteryRepository {
-        return BatteryRepositoryImp(batteryDao)
+    fun provideBatteryDBRepository(batteryDao: BatteryDao,
+                                   sharedPreferences: SharedPreferences,
+                                   baseApplication: BaseApplication,
+    ): BatteryRepository {
+        return BatteryRepositoryImp(
+            batteryDao,
+            baseApplication,
+            sharedPreferences
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideAddressDBRepository(addressDao: AddressDao): AddressRepository {
+        return AddressRepositoryImp(addressDao)
     }
 
 

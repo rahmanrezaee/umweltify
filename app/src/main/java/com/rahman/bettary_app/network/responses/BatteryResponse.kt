@@ -7,3 +7,7 @@ data class BatteryResponse (
     @SerializedName("data")
     var date: List<BatteryDto>)
 
+
+data class AddBatteryResponse (
+    @SerializedName("data")
+    var date: BatteryDto)

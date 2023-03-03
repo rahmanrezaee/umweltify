@@ -3,10 +3,10 @@ package com.rahman.bettary_app.persentation.components
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.Card
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,7 +26,7 @@ fun HomeChargingInfo() {
 
         Text(
             text = if (batteryChargingVM.chargeState.value?.isCharging == true) "Charging" else "Dis Charged",
-            style = MaterialTheme.typography.h6,
+            style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier.padding(vertical = 10.dp)
         )
         Card() {
@@ -131,7 +131,7 @@ fun HomeChargingInfo() {
 
         Text(
             text = "Last Charge Log",
-            style = MaterialTheme.typography.h6,
+            style = MaterialTheme.typography.headlineSmall,
             modifier = Modifier.padding(vertical = 10.dp)
         )
 

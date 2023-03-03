@@ -1,6 +1,7 @@
 package com.rahman.bettary_app.di
 
 import android.content.Context
+import android.content.SharedPreferences
 import com.rahman.bettary_app.persentation.BaseApplication
 import dagger.Module
 import dagger.Provides
@@ -23,10 +24,9 @@ object AppModule {
 
     @Singleton
     @Provides
-    @Named("random_string")
-    fun provideRandomString():String{
-        return  "hello world random String";
+    fun provideSharedPreference(@ApplicationContext context: Context): SharedPreferences {
+        return context.getSharedPreferences("preferences_name", Context.MODE_PRIVATE)
     }
 
-
 }
+

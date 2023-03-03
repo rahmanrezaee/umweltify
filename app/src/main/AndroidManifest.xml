@@ -10,6 +10,10 @@
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+
 
     <application
         android:name=".persentation.BaseApplication"
@@ -22,15 +26,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Bettary_app"
         tools:targetApi="31">
-        <receiver
-            android:name=".persentation.service.HeadsUpNotificationActionReceiver"
-            android:enabled="true"
-            android:exported="true"/>
 
-        <service
-            android:name=".persentation.service.HeadsUpNotificationService"
-            android:enabled="true"
-            android:exported="true" />
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data android:name="app.rive.runtime.kotlin.RiveInitializer"
+                android:value="androidx.startup" />
+        </provider>
+
+
 
         <activity
             android:name=".persentation.MainActivity"
@@ -53,6 +59,16 @@
         <service
             android:name=".persentation.service.BatteryService"
             android:foregroundServiceType="dataSync" />
+
+        <receiver
+            android:name=".persentation.service.AddressActionReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="address.intent.broadcast"/>
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

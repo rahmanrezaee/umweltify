@@ -1,7 +1,7 @@
 package com.rahman.bettary_app.persentation.components
 
 import android.os.Build
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 
 

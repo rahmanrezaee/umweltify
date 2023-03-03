@@ -1,6 +1,8 @@
 package com.rahman.bettary_app.repository
 
 import com.rahman.bettary_app.db.entity.BatteryED
+import com.rahman.bettary_app.domain.model.BatteryModel
+import com.rahman.bettary_app.network.responses.AddBatteryResponse
 
 
 interface BatteryRepository {
@@ -11,5 +13,8 @@ interface BatteryRepository {
 
     suspend fun getGroup(): List<BatteryED>
 
-    suspend fun insertToServer(battery: BatteryED)
+    suspend fun insertToServer(battery: BatteryModel) :  AddBatteryResponse
+
+
+
 }

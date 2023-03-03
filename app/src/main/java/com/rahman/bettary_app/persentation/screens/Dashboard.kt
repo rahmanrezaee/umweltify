@@ -1,35 +1,33 @@
-@file:OptIn(ExperimentalPermissionsApi::class)
+
 
 package com.rahman.bettary_app.persentation.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.permissions.*
 import com.rahman.bettary_app.persentation.components.bottom_navigation.BasicBottonNav
 import com.rahman.bettary_app.persentation.routes.NavigationGraph
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "CheckResult")
+@OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "CheckResult",
+    "UnusedMaterial3ScaffoldPaddingParameter"
+)
 @Composable
-fun Dashboard(nav: NavController) {
+fun Dashboard(nav: NavHostController) {
 
     val navController = rememberNavController()
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = "Home Page")
-                }
-            )
-        },
         bottomBar = {
             BasicBottonNav(navController)
         },
+        contentWindowInsets = WindowInsets.statusBars,
+        
         content = {
-            NavigationGraph(navController = navController)
+            NavigationGraph(navController = navController, mainNav = nav)
         }
     )
 }

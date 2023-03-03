@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,15 +17,14 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.google.accompanist.permissions.*
 import com.rahman.bettary_app.persentation.routes.MainNav
 import com.rahman.bettary_app.persentation.service.BatteryService
-import com.rahman.bettary_app.persentation.service.HeadsUpNotificationService
-import com.rahman.bettary_app.persentation.theme.Bettary_appTheme
+import com.rahman.bettary_app.persentation.theme.BatteryTheme
 import com.rahman.bettary_app.persentation.viewModel.BatteryViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -39,10 +39,11 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
 
         setContent {
-            Bettary_appTheme(
+            BatteryTheme(
                 darkTheme = false
             ) {
                 if (Build.VERSION.SDK_INT >= 33) {
