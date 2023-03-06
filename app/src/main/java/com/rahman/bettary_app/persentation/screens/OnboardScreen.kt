@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -34,12 +35,17 @@ import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.rahman.bettary_app.R
 import com.rahman.bettary_app.persentation.routes.Routes
+import com.rahman.bettary_app.persentation.viewModel.SetupViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
 @Preview
 @Composable
-fun OnboardScreen(nav : NavController = NavController(LocalContext.current)) {
+fun OnboardScreen(nav : NavController = NavController(LocalContext.current),setupViewModel: SetupViewModel  ) {
+
+
     val items = OnBoardingItems.getData()
     val scope = rememberCoroutineScope()
     val pageState = rememberPagerState()
@@ -61,6 +67,10 @@ fun OnboardScreen(nav : NavController = NavController(LocalContext.current)) {
                     pageState.scrollToPage(pageState.currentPage + 1)
                 }
             else {
+
+                CoroutineScope(Dispatchers.Main).launch {
+                    setupViewModel.disableOnBoard();
+                }
                 nav.navigate(Routes.LoginScreen.name){
                     popUpTo(nav.graph.id)
                 }

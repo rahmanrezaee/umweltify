@@ -14,28 +14,43 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.rahman.bettary_app.R
 import com.rahman.bettary_app.persentation.routes.Routes
-import kotlinx.coroutines.delay
+import com.rahman.bettary_app.persentation.viewModel.AuthViewModel
+import com.rahman.bettary_app.persentation.viewModel.LoginState
+import com.rahman.bettary_app.persentation.viewModel.SetupViewModel
 
 
-@Preview
 @SuppressLint("PermissionLaunchedDuringComposition")
 @Composable
-fun SplashScreen(nav: NavController = NavController(LocalContext.current)) {
-
+fun SplashScreen(nav: NavController = NavController(LocalContext.current,),authViewModel: AuthViewModel,setupViewModel: SetupViewModel ) {
 
     var context = LocalContext.current;
-    LaunchedEffect(key1 = true ){
-        delay(500L)
-        nav.navigate(Routes.OnBoardScreen.name){
-            popUpTo(nav.graph.id)
-        }
 
+
+    LaunchedEffect(key1 = true) {
+        authViewModel.checkIsLogin()
+        setupViewModel.onBoard.value.let {
+            if (it == true) {
+                if (authViewModel.loginState.value == LoginState.AUTHORIZED) {
+                    nav.navigate(Routes.Dashboard.name) {
+                        popUpTo(nav.graph.id)
+                    }
+                } else {
+                    nav.navigate(Routes.LoginScreen.name) {
+                        popUpTo(nav.graph.id)
+                    }
+                }
+
+            } else {
+                nav.navigate(Routes.OnBoardScreen.name) {
+                    popUpTo(nav.graph.id)
+                }
+            }
+        }
     }
     Column(
         Modifier.fillMaxSize(),
@@ -48,8 +63,6 @@ fun SplashScreen(nav: NavController = NavController(LocalContext.current)) {
             modifier = Modifier
                 .width(100.dp)
         )
-
-
     }
 
 

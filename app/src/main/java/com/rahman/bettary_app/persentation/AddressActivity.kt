@@ -5,25 +5,29 @@ import android.annotation.SuppressLint
 import android.app.KeyguardManager
 import android.app.NotificationManager
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import app.rive.runtime.kotlin.RiveAnimationView
 import com.rahman.bettary_app.R
-import com.rahman.bettary_app.persentation.service.BroadCastConst
+import com.rahman.bettary_app.persentation.screens.randomBackground
 import com.rahman.bettary_app.persentation.theme.BatteryTheme
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.core.Observable
@@ -34,51 +38,164 @@ import java.util.concurrent.TimeUnit
 @AndroidEntryPoint
 class AddressActivity : ComponentActivity() {
 
-
     @SuppressLint("CheckResult")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             showOnLockScreenAndTurnScreenOn()
         }
-
         setContent {
             BatteryTheme(
                 darkTheme = false
             ) {
                 Column(
-                    Modifier.fillMaxSize(),
+                    Modifier.fillMaxSize()
+                        .padding(top = 20.dp),
                     Arrangement.Center,
-                    Alignment.CenterHorizontally
+                    Alignment.Start
                 ) {
-                    Text(text = "Select Address Activity")
-                    Button(onClick = {
 
-                        var addressBroadCast = Intent();
-                        addressBroadCast.action = BroadCastConst.addressIntent
-                        addressBroadCast.putExtra("address", 102)
-                        sendBroadcast(addressBroadCast);
+                    Text(
+                        text = "Charging Address",
+                        style = MaterialTheme.typography.headlineSmall,
+                        modifier = Modifier.padding(vertical = 5.dp, horizontal = 10.dp)
+                    )
+                    Text(
+                        text = "Please Select One of Address Which Current You Do Charge!",
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.padding(vertical = 5.dp, horizontal = 10.dp)
+                    )
+                    ElevatedCard(
+                        colors = CardDefaults.elevatedCardColors(
+                            containerColor = Color.White,
+                        ),
+                        elevation = CardDefaults.elevatedCardElevation(
+                            defaultElevation = 20.dp
+                        ),
+                        shape = RoundedCornerShape(5),
+                        modifier = Modifier
+                            .padding(vertical = 5.dp, horizontal = 10.dp)
+                            .fillMaxWidth()
+                            .clickable {
+                                finish()
+                            }
 
-//                        finish()
-                    }) {
-                        Text(text = "Select")
+                    ) {
+                        Box(
+                            Modifier
+                                .randomBackground()
+                                .padding(start = 5.dp)
+                                .background(Color.White)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+
+                            ) {
+
+                                Text(
+                                    text = "Home", modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(10.dp)
+                                )
+
+                            }
+                        }
+
+                    }
+                    ElevatedCard(
+                        colors = CardDefaults.elevatedCardColors(
+                            containerColor = Color.White,
+                        ),
+                        elevation = CardDefaults.elevatedCardElevation(
+                            defaultElevation = 20.dp
+                        ),
+                        shape = RoundedCornerShape(5),
+                        modifier = Modifier
+                            .padding(vertical = 5.dp, horizontal = 10.dp)
+                            .fillMaxWidth()
+                            .clickable {
+                                finish()
+                            }
+
+                    ) {
+                        Box(
+                            Modifier
+                                .randomBackground()
+                                .padding(start = 5.dp)
+                                .background(Color.White)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+
+                            ) {
+
+                                Text(
+                                    text = "Office", modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(10.dp)
+                                )
+
+                            }
+                        }
+
                     }
 
+                    ElevatedCard(
+                        colors = CardDefaults.elevatedCardColors(
+                            containerColor = Color.White,
+                        ),
+                        elevation = CardDefaults.elevatedCardElevation(
+                            defaultElevation = 20.dp
+                        ),
+                        shape = RoundedCornerShape(5),
+                        modifier = Modifier
+                            .padding(vertical = 5.dp, horizontal = 10.dp)
+                            .fillMaxWidth()
+                            .clickable {
+                                finish()
+                            }
+
+                    ) {
+                        Box(
+                            Modifier
+                                .randomBackground()
+                                .padding(start = 5.dp)
+                                .background(Color.White)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+
+                            ) {
+
+                                Text(
+                                    text = "Other", modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(10.dp)
+                                )
+
+                            }
+                        }
+
+                    }
                     var percentage by remember {
                         mutableStateOf(0f)
                     }
-
-                    AndroidView({ context->
+                    AndroidView({ context ->
 
                         RiveAnimationView(context).also { rive ->
                             rive.setRiveResource(
                                 resId = R.raw.charging,
                                 stateMachineName = "State Machine",
                             )
-                            Observable.interval(1, TimeUnit.SECONDS).subscribeOn(Schedulers.io()).subscribe {
-                                percentage += it;
-                                rive.setNumberState("State Machine","Load Percentage",percentage)
-                            }
+                            Observable.interval(5, TimeUnit.SECONDS).subscribeOn(Schedulers.io())
+                                .subscribe {
+                                    percentage += it;
+                                    rive.setNumberState(
+                                        "State Machine",
+                                        "Load Percentage",
+                                        percentage
+                                    )
+                                }
                         }
 
                     })

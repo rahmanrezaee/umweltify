@@ -20,8 +20,8 @@ fun CustomTextField(
     value: String,
     onChange: (value: String) -> Unit,
     modifier: Modifier = Modifier,
-    trailingIcon: @Composable () -> Unit = {},
-    placeHolder: @Composable () -> Unit = {},
+    trailingIcon: @Composable (() -> Unit)? = null,
+    placeHolder: @Composable (() -> Unit)? = null,
     visualTransformation: VisualTransformation  = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions(
         keyboardType = KeyboardType.Password,

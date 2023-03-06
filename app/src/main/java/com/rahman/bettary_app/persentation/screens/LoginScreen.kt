@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
@@ -14,18 +15,29 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.rahman.bettary_app.R
+import com.rahman.bettary_app.persentation.components.CustomButton
 import com.rahman.bettary_app.persentation.components.CustomTextField
 import com.rahman.bettary_app.persentation.routes.Routes
-import com.rahman.bettary_app.persentation.theme.BatteryTheme
+import com.rahman.bettary_app.persentation.viewModel.AuthViewModel
+import com.rahman.bettary_app.persentation.viewModel.LoginState
 
 
-@SuppressLint("UnrememberedMutableState", "UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint(
+    "UnrememberedMutableState", "UnusedMaterial3ScaffoldPaddingParameter",
+    "StateFlowValueCalledInComposition"
+)
 @Composable
-fun LoginScreen(nav: NavController = NavController(LocalContext.current)) {
+fun LoginScreen(nav: NavController = NavController(LocalContext.current),authViewModel: AuthViewModel) {
+
+
+
+    val state by authViewModel.loginState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+
     var email by remember {
         mutableStateOf("")
     }
@@ -41,23 +53,11 @@ fun LoginScreen(nav: NavController = NavController(LocalContext.current)) {
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    nav.navigate(Routes.Dashboard.name){
-                        popUpTo(nav.graph.id)
-                    }
-                },
-                containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(15.dp, 15.dp, 15.dp, 15.dp))
-            ) {
-                Text(
-                    "Skip",
-                    color = MaterialTheme.colorScheme.secondaryContainer
-                )
-            }
-        }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+    ) {
+
+    Box(
+        contentAlignment = Alignment.BottomEnd,
     ) {
 
         Column(
@@ -66,13 +66,13 @@ fun LoginScreen(nav: NavController = NavController(LocalContext.current)) {
                 .padding(32.dp)
         ) {
 
-                Image(
-                    painter = painterResource(id = R.drawable.logo),
-                    contentDescription = "App Logo",
-                    modifier = Modifier
-                        .weight(1f)
-                        .size(100.dp),
-                )
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = "App Logo",
+                modifier = Modifier
+                    .weight(1f)
+                    .size(100.dp),
+            )
 
 
             Text(text = "Welcome Back!", style = MaterialTheme.typography.headlineMedium)
@@ -117,24 +117,41 @@ fun LoginScreen(nav: NavController = NavController(LocalContext.current)) {
             )
 
             Spacer(modifier = Modifier.height(30.dp))
-            Button(
-                onClick = {
-                    nav.navigate(Routes.Dashboard.name){
-                        popUpTo(nav.graph.id)
+
+
+            state.let { state ->
+                when (state) {
+                    LoginState.START -> {}
+                    LoginState.LOADING -> {}
+                    LoginState.UNAUTHORIZED ->{}
+                    is LoginState.FAILURE -> {
+                        val message = state.message
+                        LaunchedEffect(key1 = message) {
+                            snackbarHostState.showSnackbar(
+                                message,
+                            )
+                        }
                     }
-                },
-                enabled = isFormValid,
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp)
+                    LoginState.AUTHORIZED -> {
+
+                    }
+                }
+            }
+
+            var context = LocalContext.current
+            CustomButton(
+                label = "Log In",
+                isLoading = state == LoginState.LOADING,
+                enable = isFormValid
             ) {
-                Text(text = "Log In")
+                authViewModel.login(email, password,nav);
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 TextButton(onClick = {
-                    nav.navigate(Routes.RegisterScreen.name){
+                    nav.navigate(Routes.RegisterScreen.name) {
                         popUpTo(nav.graph.id)
                     }
                 }) {
@@ -147,19 +164,34 @@ fun LoginScreen(nav: NavController = NavController(LocalContext.current)) {
                 }
             }
             Spacer(modifier = Modifier.weight(1f))
+
         }
 
+        Row(
+            Modifier.padding(bottom = 10.dp,end = 10.dp),
+            horizontalArrangement = Arrangement.End
+        ){
+            FloatingActionButton(
+                onClick = {
+                    authViewModel.loginState.value = LoginState.UNAUTHORIZED;
+                    nav.navigate(Routes.Dashboard.name) {
+                        popUpTo(nav.graph.id)
+                    }
+                },
+                containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(15.dp, 15.dp, 15.dp, 15.dp))
+            ) {
+                Text(
+                    "Skip",
+                    color = MaterialTheme.colorScheme.secondaryContainer
+                )
+            }
+        }
+    }
+
+
 
     }
 }
 
-
-@Preview
-@Composable
-fun PreviewLoginScreen() {
-    BatteryTheme(
-        darkTheme = false
-    ) {
-        LoginScreen()
-    }
-}

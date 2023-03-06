@@ -1,5 +1,6 @@
 package com.rahman.bettary_app.persentation.components.bottom_navigation
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -15,10 +16,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.rahman.bettary_app.persentation.routes.Routes
+import com.rahman.bettary_app.persentation.viewModel.AuthViewModel
+import com.rahman.bettary_app.persentation.viewModel.LoginState
 
 
 @Composable
-fun BasicBottonNav(navController: NavController) {
+fun BasicBottomNav(navController: NavController, mainNav: NavController,authViewModel: AuthViewModel) {
+
+
+
     val items = listOf(
         BottomNavItem.Home,
         BottomNavItem.Action,
@@ -27,12 +34,11 @@ fun BasicBottonNav(navController: NavController) {
     )
     NavigationBar(
         containerColor = Color.Transparent,
-
-//        tonalElevation = 20.dp,
         modifier = Modifier
             .clip(RoundedCornerShape(topEndPercent = 50, topStartPercent = 50))
             .shadow(10.dp)
-            .background(Color.White).height(60.dp)
+            .background(MaterialTheme.colorScheme.secondaryContainer)
+            .height(60.dp)
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
@@ -40,24 +46,35 @@ fun BasicBottonNav(navController: NavController) {
             NavigationBarItem(
                 icon = {
                     Icon(
-                        painterResource(id =
-                        if(currentRoute == item.screen_route)
-                            item.activeIcon
-                        else item.defaultIcon),
+                        painterResource(
+                            id =
+                            if (currentRoute == item.screen_route)
+                                item.activeIcon
+                            else item.defaultIcon
+                        ),
                         modifier = Modifier.size(25.dp),
-                        contentDescription = item.title)
-                       },
+                        contentDescription = item.title
+                    )
+                },
                 alwaysShowLabel = false,
                 colors = NavigationBarItemDefaults.colors(
-                    indicatorColor = Color.White,
+                    indicatorColor = MaterialTheme.colorScheme.secondaryContainer,
 //                    selectedTextColor = Color.Transparent,
 //                    selectedIconColor = Color.Transparent
                 ),
                 selected = currentRoute == item.screen_route,
 //                modifier = Modifier.padding(0.dp),
                 onClick = {
-                    navController.navigate(item.screen_route) {
 
+
+                    Log.i("loginstate","loginState ${authViewModel.loginState.value}")
+                    if (item.needLogin) {
+                        if (authViewModel.loginState.value != LoginState.AUTHORIZED) {
+                            mainNav.navigate(Routes.LoginScreen.name)
+                            return@NavigationBarItem
+                        }
+                    }
+                    navController.navigate(item.screen_route) {
                         navController.graph.startDestinationRoute?.let { screen_route ->
                             popUpTo(screen_route) {
                                 saveState = true

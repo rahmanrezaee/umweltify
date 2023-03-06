@@ -4,10 +4,8 @@ import android.Manifest
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
@@ -15,17 +13,18 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.permissions.*
+import com.rahman.bettary_app.persentation.components.general.RequestPermissionComponent
+import com.rahman.bettary_app.persentation.components.general.customRememberPermissionState
+import com.rahman.bettary_app.persentation.components.general.showAlertSetting
 import com.rahman.bettary_app.persentation.routes.MainNav
 import com.rahman.bettary_app.persentation.service.BatteryService
 import com.rahman.bettary_app.persentation.theme.BatteryTheme
-import com.rahman.bettary_app.persentation.viewModel.BatteryViewModel
+import com.rahman.bettary_app.persentation.viewModel.SetupViewModel
+import com.rahman.bettary_app.persentation.viewModel.ThemeState
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -34,7 +33,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
 
-    private val viewModel: BatteryViewModel by viewModels()
+    private val setupViewModel: SetupViewModel by viewModels()
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,26 +43,52 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             BatteryTheme(
-                darkTheme = false
+                darkTheme = when(setupViewModel.themeState.value){
+                    ThemeState.LIGHT_MODE -> {
+                        false
+                    }
+                    ThemeState.SYSTEM ->{
+                        isSystemInDarkTheme()
+                    }
+                    ThemeState.DARK_MODE -> {
+                        true
+                    }
+                }
             ) {
+                var context = LocalContext.current
+
                 if (Build.VERSION.SDK_INT >= 33) {
 
-                    val notificationPermissionState = rememberPermissionState(
-                        Manifest.permission.POST_NOTIFICATIONS
+                    val pushPermissionState = customRememberPermissionState(
+                        permission = Manifest.permission.POST_NOTIFICATIONS,
+                        onCannotRequestPermission = {
+                            context.showAlertSetting(
+                                "Notification Permission",
+                                "Notification",
+                                context.packageName
+                            )
+                        }
                     )
-                    if (notificationPermissionState.status.isGranted) {
-                        setupBatteryService()
-                        MainApp()
+                    if (pushPermissionState.status.isGranted) {
+                        mainView(setupViewModel)
                     } else {
-                        RequestNotificationPage(this,notificationPermissionState)
+                        RequestPermissionComponent(title ="You haven't Notification Permission") {
+                            pushPermissionState.launchPermissionRequest()
+                        }
                     }
                 } else {
-                    setupBatteryService()
-                    MainApp()
+                    mainView(setupViewModel)
                 }
             }
 
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Composable
+   fun mainView(setupViewModel:SetupViewModel){
+        setupBatteryService()
+        MainNav(setupViewModel)
     }
 
 
@@ -94,36 +119,4 @@ class MainActivity : ComponentActivity() {
         }
         return false
     }
-}
-
-@Composable
-fun MainApp() {
-    MainNav()
-}
-
-@OptIn(ExperimentalPermissionsApi::class)
-@Composable
-fun RequestNotificationPage(context: Context,notificationPermissionState: PermissionState) {
-
-        Column(Modifier.fillMaxSize()) {
-
-            Text(text = "Not Allow To Notification")
-
-            if (notificationPermissionState.status.shouldShowRationale) {
-                Text(text = "Allow The Notifications")
-                notificationPermissionState.launchPermissionRequest()
-            } else {
-
-                Button(onClick = {
-                    // Open app settings enable permission
-                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                    intent.data = Uri.parse("package:com.rahman.bettary_app")
-                    context.startActivity(intent)
-                }) {
-                    Text(text = "Go Setting And Enable Notification")
-                }
-
-            }
-        }
-
 }

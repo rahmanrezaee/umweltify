@@ -1,4 +1,4 @@
-package com.rahman.bettary_app.persentation.components
+package com.rahman.bettary_app.persentation.components.home
 
 import android.os.Build
 import androidx.compose.material3.Text

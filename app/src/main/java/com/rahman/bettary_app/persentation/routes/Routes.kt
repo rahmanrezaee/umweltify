@@ -9,6 +9,7 @@ enum class Routes{
     Dashboard,
     AddressScreen,
     OnBoardScreen,
+    SettingScreen,
     DetailScreen;
 
     companion object {
@@ -19,6 +20,7 @@ enum class Routes{
                 RegisterScreen.name -> RegisterScreen
                 Dashboard.name -> Dashboard
                 AddressScreen.name -> AddressScreen
+                SettingScreen.name -> SettingScreen
                 OnBoardScreen.name -> OnBoardScreen
                 ForgetPasswordScreen.name -> ForgetPasswordScreen
                 ResetPasswordScreen.name -> ResetPasswordScreen

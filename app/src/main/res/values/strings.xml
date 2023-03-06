@@ -6,8 +6,6 @@
     <string name="address_key">address_id</string>
 
 
-    // URL Constance
-    <string name="base_url">https://hello-world.free.beeceptor.com/</string>
 
 
 </resources>

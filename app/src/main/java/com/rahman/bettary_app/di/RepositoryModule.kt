@@ -5,10 +5,7 @@ import com.rahman.bettary_app.db.AddressDao
 import com.rahman.bettary_app.db.BatteryDao
 import com.rahman.bettary_app.network.AppRequestService
 import com.rahman.bettary_app.persentation.BaseApplication
-import com.rahman.bettary_app.repository.AddressRepository
-import com.rahman.bettary_app.repository.AddressRepositoryImp
-import com.rahman.bettary_app.repository.BatteryRepository
-import com.rahman.bettary_app.repository.BatteryRepositoryImp
+import com.rahman.bettary_app.repository.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,6 +30,17 @@ class RepositoryModule {
             sharedPreferences
         )
     }
+
+    @Provides
+    @Singleton
+    fun provideLoginRepository(
+        request: AppRequestService
+    ): AuthRepository {
+        return AuthRepositoryImp(
+            request
+        )
+    }
+
 
     @Provides
     @Singleton

@@ -7,8 +7,6 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rahman.bettary_app.db.entity.BatteryED
@@ -19,7 +17,6 @@ import com.rahman.bettary_app.repository.BatteryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -56,8 +53,6 @@ class BatteryChargingViewModel @Inject constructor(
 
 
         BatteryReceiver.observe(application).subscribeOn(Schedulers.io()).subscribe {
-
-
             chargeState.value = it;
             Log.i("BatteryReceiver","Charging Changed")
         }
