@@ -1,7 +1,6 @@
 package com.rahman.bettary_app.db
 
 import androidx.room.*
-import com.rahman.bettary_app.db.entity.AddressED
 import com.rahman.bettary_app.db.entity.BatteryED
 
 
@@ -15,6 +14,11 @@ interface BatteryDao {
 
     @Query("SELECT * FROM battery_usage where uid in (SELECT max(uid) FROM battery_usage GROUP BY group_id ) order by uid desc limit 10")
     fun getGroup(): List<BatteryED>
+
+    @Query("SELECT * FROM battery_usage WHERE group_id = :groupId")
+    fun getGroupForService(groupId:String): List<BatteryED>
+    @Query("SELECT * FROM battery_usage WHERE uid = ( SELECT MAX(uid) FROM battery_usage )")
+    fun findLast(): BatteryED
 
     @Insert
     fun insert(item: BatteryED)

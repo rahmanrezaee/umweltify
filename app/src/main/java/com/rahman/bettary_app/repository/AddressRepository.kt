@@ -1,10 +1,11 @@
 package com.rahman.bettary_app.repository
 
 import com.rahman.bettary_app.db.entity.AddressED
+import kotlinx.coroutines.flow.Flow
 
 interface AddressRepository {
 
-    suspend fun getAll(): List<AddressED>
+    suspend fun getAll(): Flow<List<AddressED>>
 
     suspend fun insertOne(item: AddressED)
 

@@ -13,13 +13,14 @@ import com.google.accompanist.permissions.*
 import com.rahman.bettary_app.persentation.components.bottom_navigation.BasicBottomNav
 import com.rahman.bettary_app.persentation.routes.NavigationGraph
 import com.rahman.bettary_app.persentation.viewModel.AuthViewModel
+import com.rahman.bettary_app.persentation.viewModel.SetupViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "CheckResult",
     "UnusedMaterial3ScaffoldPaddingParameter", "StateFlowValueCalledInComposition"
 )
 @Composable
-fun Dashboard(nav: NavHostController,authViewModel : AuthViewModel) {
+fun Dashboard(nav: NavHostController,authViewModel : AuthViewModel,setupViewModel: SetupViewModel) {
 
     Log.i("loginState","loginState ${authViewModel.loginState.value}")
     val navController = rememberNavController()
@@ -30,7 +31,7 @@ fun Dashboard(nav: NavHostController,authViewModel : AuthViewModel) {
         contentWindowInsets = WindowInsets.statusBars,
         
         content = {
-            NavigationGraph(navController = navController, mainNav = nav, authViewModel = authViewModel)
+            NavigationGraph(navController = navController, mainNav = nav, authViewModel = authViewModel,setupViewModel)
         }
     )
 }

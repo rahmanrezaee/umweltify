@@ -17,17 +17,17 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class RepositoryModule {
 
-
     @Provides
     @Singleton
-    fun provideBatteryDBRepository(batteryDao: BatteryDao,
+    fun provideBatteryDBRepository(
+        batteryDao: BatteryDao,
                                    sharedPreferences: SharedPreferences,
-                                   baseApplication: BaseApplication,
+                                   baseApplication: BaseApplication
     ): BatteryRepository {
         return BatteryRepositoryImp(
             batteryDao,
             baseApplication,
-            sharedPreferences
+            sharedPreferences,
         )
     }
 

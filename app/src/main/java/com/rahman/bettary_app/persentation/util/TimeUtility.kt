@@ -35,4 +35,23 @@ object TimeUtility {
             return "$hourString$minString"
         }
     }
+
+    @SuppressLint("SimpleDateFormat")
+    fun convertUTC(time: Long): String {
+
+        val date = Date(time)
+        val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SS'Z'")
+        return format.format(date)
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    fun getMonth(time: String): String {
+
+        val formatter = SimpleDateFormat("yyyy-MM-dd")
+        val date = formatter.parse(time.split("T").first())
+        val format = SimpleDateFormat("MMM")
+        return format.format(date)
+
+
+    }
 }

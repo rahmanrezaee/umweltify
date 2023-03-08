@@ -25,6 +25,7 @@ import com.google.accompanist.permissions.*
 import com.rahman.bettary_app.R
 import com.rahman.bettary_app.persentation.theme.Typography
 import com.rahman.bettary_app.persentation.viewModel.SetupViewModel
+import com.rahman.bettary_app.persentation.viewModel.TemperState
 import com.rahman.bettary_app.persentation.viewModel.ThemeState
 
 //@Preview
@@ -90,7 +91,7 @@ fun SettingScreen(
                         },
                         overlineText = {
                             Text(
-                                text = "Home",
+                                text = "Them",
                             )
 
                         },
@@ -150,18 +151,90 @@ fun SettingScreen(
                                     )
                                 }
                             }
-
-
                         }
                     )
-
-
                 }
+                item {
 
+
+                    var expandedTemp by remember { mutableStateOf(false) }
+
+                    ListItem(
+                        modifier = Modifier.clickable {
+                            expandedTemp = !expandedTemp
+                        },
+                        leadingContent = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.temperature),
+                                contentDescription = null
+                            )
+                        },
+                        overlineText = {
+                            Text(
+                                text = "Temperature Unit",
+                            )
+
+                        },
+                        headlineText = {
+                            Text(
+                                text = when (setupViewModel.temperatureState.value) {
+                                    TemperState.CNG -> {
+                                        "°C"
+                                    }
+                                    TemperState.FRT -> {
+                                        "°F"
+                                    }
+                                    TemperState.KOL -> {
+                                        "°K"
+                                    }
+                                },
+                            )
+                        },
+                        trailingContent = {
+                            Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+                                Icon(Icons.Rounded.KeyboardArrowRight, contentDescription = null)
+                                DropdownMenu(
+                                    expanded = expandedTemp,
+                                    onDismissRequest = { expandedTemp = false },
+                                    offset = DpOffset(0.dp, -20.dp),
+                                    modifier = Modifier
+                                        .padding(0.dp)
+                                        .background(MaterialTheme.colorScheme.background)
+                                ) {
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text("°C")
+                                        },
+                                        onClick = {
+                                            setupViewModel.changeTemp(TemperState.CNG)
+                                            expandedTemp = !expandedTemp
+                                        }
+                                    )
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text("°F")
+                                        },
+                                        onClick = {
+                                            setupViewModel.changeTemp(TemperState.FRT)
+                                            expandedTemp = !expandedTemp
+                                        }
+                                    )
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text("°K")
+                                        },
+                                        onClick = {
+                                            setupViewModel.changeTemp(TemperState.KOL)
+                                            expandedTemp = !expandedTemp
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    )
+                }
             }
-
         }
-
     )
 }
 

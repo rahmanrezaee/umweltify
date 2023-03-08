@@ -1,10 +1,8 @@
 package com.rahman.bettary_app.network
 
 import com.rahman.bettary_app.domain.model.BatteryModel
-import com.rahman.bettary_app.network.responses.AddBatteryResponse
-import com.rahman.bettary_app.network.responses.BatteryResponse
-import com.rahman.bettary_app.network.responses.LoginRequestBody
-import com.rahman.bettary_app.network.responses.LoginResponse
+import com.rahman.bettary_app.domain.model.DashboardBodyModel
+import com.rahman.bettary_app.network.responses.*
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -25,7 +23,10 @@ interface AppRequestService {
         @Body loginRequest: LoginRequestBody
     ):Result<LoginResponse>
 
-    @POST("/")
-    suspend fun insertBattery(@Body battery:BatteryModel) : AddBatteryResponse
+    @POST("consumption/addmeasurement")
+    suspend fun insertBattery(@Body battery:BatteryModel) : Result<AddBatteryResponse>
+
+    @POST("Dashboard/GetDeviceEmission")
+    suspend fun getDashboardData(@Body body: DashboardBodyModel) : Result<DashboardResponse>
 
 }

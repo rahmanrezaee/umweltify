@@ -10,35 +10,39 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import app.rive.runtime.kotlin.RiveAnimationView
 import com.rahman.bettary_app.R
-import com.rahman.bettary_app.persentation.screens.randomBackground
+import com.rahman.bettary_app.db.entity.AddressED
 import com.rahman.bettary_app.persentation.theme.BatteryTheme
+import com.rahman.bettary_app.persentation.theme.Typography
+import com.rahman.bettary_app.persentation.util.RequestState
+import com.rahman.bettary_app.persentation.viewModel.AddressViewModel
+import com.rahman.bettary_app.persentation.viewModel.BatteryChargingViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.schedulers.Schedulers
-import java.util.concurrent.TimeUnit
 
 
 @AndroidEntryPoint
 class AddressActivity : ComponentActivity() {
 
-    @SuppressLint("CheckResult")
+
+    private val batteryCharging: BatteryChargingViewModel by viewModels()
+    private val addressVM: AddressViewModel by viewModels()
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @SuppressLint("CheckResult", "UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
@@ -48,159 +52,101 @@ class AddressActivity : ComponentActivity() {
             BatteryTheme(
                 darkTheme = false
             ) {
-                Column(
-                    Modifier.fillMaxSize()
-                        .padding(top = 20.dp),
-                    Arrangement.Center,
-                    Alignment.Start
-                ) {
 
-                    Text(
-                        text = "Charging Address",
-                        style = MaterialTheme.typography.headlineSmall,
-                        modifier = Modifier.padding(vertical = 5.dp, horizontal = 10.dp)
-                    )
-                    Text(
-                        text = "Please Select One of Address Which Current You Do Charge!",
-                        style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier.padding(vertical = 5.dp, horizontal = 10.dp)
-                    )
-                    ElevatedCard(
-                        colors = CardDefaults.elevatedCardColors(
-                            containerColor = Color.White,
-                        ),
-                        elevation = CardDefaults.elevatedCardElevation(
-                            defaultElevation = 20.dp
-                        ),
-                        shape = RoundedCornerShape(5),
-                        modifier = Modifier
-                            .padding(vertical = 5.dp, horizontal = 10.dp)
-                            .fillMaxWidth()
-                            .clickable {
-                                finish()
-                            }
+                Scaffold{
 
+                    Column(
+                        Modifier
+                            .fillMaxSize()
+                            .padding(top = 20.dp),
+                        Arrangement.Center,
+                        Alignment.Start
                     ) {
-                        Box(
-                            Modifier
-                                .randomBackground()
-                                .padding(start = 5.dp)
-                                .background(Color.White)
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
 
-                            ) {
-
+                        TopAppBar(
+                            title = {
                                 Text(
-                                    text = "Home", modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(10.dp)
+                                    text = "Select Address",
+                                    maxLines = 1,
+                                    style = Typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                                    overflow = TextOverflow.Ellipsis
                                 )
+                            }
+                        )
+                        Text(
+                            text = "Please Select One of Address Which Current You Do Charge!",
+                            style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier.padding(vertical = 5.dp, horizontal = 10.dp)
+                        )
+                        val allItems by addressVM.items.collectAsState()
+                        if (allItems is RequestState.Success) {
+                            var innerItem: List<AddressED> =
+                                (allItems as RequestState.Success<List<AddressED>>).data
+                            for (item in innerItem) {
+                                ListItem(
+                                    modifier = Modifier.clickable {
+                                        addressVM.selectAddress(item)
+                                        finish()
+                                    },
+                                    leadingContent = {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.round_my_location),
+                                            contentDescription = null
+                                        )
+                                    },
+                                    supportingText = {
+                                        Text(
+                                            text = "(${item.latitude},${item.longitude})",
+                                        )
+                                    },
+                                    headlineText = {
+                                        Text(
+                                            text = item.placeName,
+                                        )
+                                    },
+                                    trailingContent = {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.round_check_circle),
+                                            tint = if (addressVM.selectedAddress.value == item.placeName) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.scrim,
+                                            contentDescription = null
+                                        )
 
+                                    }
+                                )
                             }
                         }
+                        Spacer(modifier = Modifier.weight(1f))
 
-                    }
-                    ElevatedCard(
-                        colors = CardDefaults.elevatedCardColors(
-                            containerColor = Color.White,
-                        ),
-                        elevation = CardDefaults.elevatedCardElevation(
-                            defaultElevation = 20.dp
-                        ),
-                        shape = RoundedCornerShape(5),
-                        modifier = Modifier
-                            .padding(vertical = 5.dp, horizontal = 10.dp)
-                            .fillMaxWidth()
-                            .clickable {
-                                finish()
-                            }
-
-                    ) {
-                        Box(
-                            Modifier
-                                .randomBackground()
-                                .padding(start = 5.dp)
-                                .background(Color.White)
+                        Row(
+                            Modifier.fillMaxWidth(),
+                            Arrangement.Center,
+                            Alignment.CenterVertically
                         ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-
-                            ) {
-
-                                Text(
-                                    text = "Office", modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(10.dp)
-                                )
-
-                            }
-                        }
-
-                    }
-
-                    ElevatedCard(
-                        colors = CardDefaults.elevatedCardColors(
-                            containerColor = Color.White,
-                        ),
-                        elevation = CardDefaults.elevatedCardElevation(
-                            defaultElevation = 20.dp
-                        ),
-                        shape = RoundedCornerShape(5),
-                        modifier = Modifier
-                            .padding(vertical = 5.dp, horizontal = 10.dp)
-                            .fillMaxWidth()
-                            .clickable {
-                                finish()
-                            }
-
-                    ) {
-                        Box(
-                            Modifier
-                                .randomBackground()
-                                .padding(start = 5.dp)
-                                .background(Color.White)
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-
-                            ) {
-
-                                Text(
-                                    text = "Other", modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(10.dp)
-                                )
-
-                            }
-                        }
-
-                    }
-                    var percentage by remember {
-                        mutableStateOf(0f)
-                    }
-                    AndroidView({ context ->
-
-                        RiveAnimationView(context).also { rive ->
-                            rive.setRiveResource(
-                                resId = R.raw.charging,
-                                stateMachineName = "State Machine",
-                            )
-                            Observable.interval(5, TimeUnit.SECONDS).subscribeOn(Schedulers.io())
-                                .subscribe {
-                                    percentage += it;
+                            AndroidView(
+                                { context ->
+                                    RiveAnimationView(context).also { rive ->
+                                        rive.setRiveResource(
+                                            resId = R.raw.charging,
+                                            stateMachineName = "State Machine",
+                                        )
+                                    }
+                                }, update = { rive ->
                                     rive.setNumberState(
                                         "State Machine",
                                         "Load Percentage",
-                                        percentage
+                                        (batteryCharging.chargeState.value?.level ?: 0).toFloat()
                                     )
-                                }
+
+                                },
+
+                                modifier = Modifier.fillMaxWidth(0.8f)
+                            )
                         }
 
-                    })
+                    }
 
                 }
+
 
             }
         }

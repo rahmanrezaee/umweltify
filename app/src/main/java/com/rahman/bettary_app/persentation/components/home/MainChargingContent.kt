@@ -2,8 +2,6 @@ package com.rahman.bettary_app.persentation.components.home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,9 +14,10 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.orbitalsonic.waterwave.WaterWaveView
 import com.rahman.bettary_app.R
 import com.rahman.bettary_app.persentation.viewModel.BatteryChargingViewModel
+import com.rahman.bettary_app.persentation.viewModel.SetupViewModel
 
 @Composable
-fun MainChargingContent( batteryCharging: BatteryChargingViewModel) {
+fun MainChargingContent( batteryCharging: BatteryChargingViewModel,setupViewModel:SetupViewModel) {
     Row(
         Modifier.height(250.dp)
     ) {
@@ -31,6 +30,7 @@ fun MainChargingContent( batteryCharging: BatteryChargingViewModel) {
             ElevatedCard(
                 colors = CardDefaults.elevatedCardColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
+
                     ),
                 elevation = CardDefaults.elevatedCardElevation(
                     defaultElevation = 20.dp
@@ -46,22 +46,25 @@ fun MainChargingContent( batteryCharging: BatteryChargingViewModel) {
                         .padding(10.dp)
                 ) {
 
-                    Text(text = "Status", style = MaterialTheme.typography.labelSmall)
-                    Text(
-                        text = "Charging",
+                    Text(text = "Temperature", style = MaterialTheme.typography.labelSmall)
+
+                    var temperature:Double? = batteryCharging.chargeState.value?.temperature?.div(10.0)
+                            Text(
+                        text = setupViewModel.convertTemp(temperature?:0.0),
                         style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Icon(
                         painterResource(
-                            id = R.drawable.charging
+                            id = R.drawable.round_air
                         ),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.rotate(90F)
+                        modifier = Modifier.size(25.dp)
                     )
                 }
             }
+
 
             ElevatedCard(
                 colors = CardDefaults.elevatedCardColors(
@@ -84,13 +87,17 @@ fun MainChargingContent( batteryCharging: BatteryChargingViewModel) {
 
                     Text(text = "Status", style = MaterialTheme.typography.labelSmall)
                     Text(
-                        text = "${batteryCharging.chargeState.value?.isCharging}",
+                        text = "${batteryCharging.chargeState.value?.status()}",
                         style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Icon(
-                        Icons.Default.Add,
+                        painterResource(
+                            id = R.drawable.charging
+                        ),
                         contentDescription = null,
+                        modifier =
+                        Modifier.size(25.dp).rotate(90F),
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
@@ -108,9 +115,6 @@ fun MainChargingContent( batteryCharging: BatteryChargingViewModel) {
                 .fillMaxSize()
                 .padding(10.dp)
         ) {
-
-
-
             Box {
                 AndroidView({ context ->
                     WaterWaveView(context).also { waterWaveView ->
@@ -141,8 +145,6 @@ fun MainChargingContent( batteryCharging: BatteryChargingViewModel) {
                         it.progress = (batteryCharging.chargeState.value?.level?:0 ) +20
                     }
                 )
-
-
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -150,7 +152,6 @@ fun MainChargingContent( batteryCharging: BatteryChargingViewModel) {
                     Arrangement.Center,
                     Alignment.CenterHorizontally
                 ) {
-
                     Text(
                         text = "Battery Level",
                         style = MaterialTheme.typography.labelSmall
@@ -160,8 +161,7 @@ fun MainChargingContent( batteryCharging: BatteryChargingViewModel) {
                         style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
                     )
                     Spacer(modifier = Modifier.weight(1f))
-                    Text(text = "${batteryCharging.chargeState.value?.voltage?:0} mAh", style = MaterialTheme.typography.labelSmall)
-
+                    Text(text = "${batteryCharging.batteryInfo.value?.batteryCapacity?:0} mAh", style = MaterialTheme.typography.labelSmall)
                 }
             }
         }

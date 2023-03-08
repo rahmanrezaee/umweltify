@@ -3,10 +3,6 @@ package com.rahman.bettary_app.persentation.routes
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelStoreOwner
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -30,7 +26,7 @@ fun MainNav(setupViewModel: SetupViewModel) {
         navController = navController,
         startDestination = Routes.SplashScreen.name ){
         composable(Routes.Dashboard.name){
-            Dashboard(nav = navController,authViewModel)
+            Dashboard(nav = navController,authViewModel,setupViewModel)
         }
         composable(Routes.AddressScreen.name){
             AddressScreen(nav = navController)
@@ -61,9 +57,7 @@ fun MainNav(setupViewModel: SetupViewModel) {
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun NavigationGraph(navController: NavHostController,mainNav:NavHostController, authViewModel: AuthViewModel) {
-
-
+fun NavigationGraph(navController: NavHostController,mainNav:NavHostController, authViewModel: AuthViewModel,setupViewModel:SetupViewModel) {
 
 
     NavHost(
@@ -71,7 +65,7 @@ fun NavigationGraph(navController: NavHostController,mainNav:NavHostController, 
         startDestination = BottomNavItem.Home.screen_route
     ) {
         composable(BottomNavItem.Home.screen_route,) {
-            HomePage(mainNav)
+            HomePage(mainNav,setupViewModel)
         }
         composable(BottomNavItem.Action.screen_route) {
             ActionPage()
@@ -85,20 +79,3 @@ fun NavigationGraph(navController: NavHostController,mainNav:NavHostController, 
     }
 }
 
-
-//extensions
-@Composable
-inline fun <reified T : ViewModel> NavBackStackEntry?.viewModel(): T? = this?.let {
-    viewModel(viewModelStoreOwner = it)
-}
-
-@Composable
-inline fun <reified T : ViewModel> NavBackStackEntry.viewModel(
-    viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
-        "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
-    }
-): T {
-    return androidx.lifecycle.viewmodel.compose.viewModel(
-        viewModelStoreOwner = viewModelStoreOwner, key = T::class.java.name
-    )
-}

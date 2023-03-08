@@ -7,5 +7,4 @@ data class LoginDto(
     val email:String,
     @SerializedName("username")
     val username:String,
-
 )

@@ -12,6 +12,6 @@ sealed class BottomNavItem(var title:String,
     object Home : BottomNavItem("Home",  R.drawable.home_fill, R.drawable.home_outline, "home",needLogin = false)
     object Action: BottomNavItem("Action",R.drawable.chart_fill,R.drawable.chart_outline,"action",needLogin = false)
     object Shop: BottomNavItem("Market",R.drawable.store_fill,R.drawable.store_outline,"shop", needLogin = false)
-    object Profile: BottomNavItem("Profile",R.drawable.user_fill,R.drawable.user_outline,"profile",needLogin = true)
+    object Profile: BottomNavItem("Profile",R.drawable.user_fill,R.drawable.user_outline,"profile",needLogin = false)
 
 }

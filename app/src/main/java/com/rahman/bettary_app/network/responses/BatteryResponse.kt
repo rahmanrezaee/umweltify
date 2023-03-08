@@ -2,6 +2,7 @@ package com.rahman.bettary_app.network.responses
 
 import com.google.gson.annotations.SerializedName
 import com.rahman.bettary_app.network.model.BatteryDto
+import com.rahman.bettary_app.network.model.DashboardItemDto
 import com.rahman.bettary_app.network.model.LoginDto
 
 data class BatteryResponse(
@@ -15,6 +16,17 @@ data class LoginResponse (
     val accessToken:String,
     @SerializedName("refreshToken")
     val refreshToken:String
+)
+data class DashboardResponse (
+    @SerializedName("Data")
+    var data: DashboardInnerResponse,
+)
+
+data class DashboardInnerResponse (
+    @SerializedName("Data")
+    var data: List<DashboardItemDto>,
+    @SerializedName("Title")
+    var title:String
 )
 
 data class AddBatteryResponse (
