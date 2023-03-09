@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace 'com.rahman.bettary_app'
+    namespace 'com.rahman.umweltify'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.rahman.bettary_app"
+        applicationId "com.rahman.umweltify"
         minSdk 24
         targetSdk 33
         versionCode 1

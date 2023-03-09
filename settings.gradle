@@ -15,5 +15,5 @@ dependencyResolutionManagement {
         maven { url 'https://jitpack.io' }
     }
 }
-rootProject.name = "bettary_app"
+rootProject.name = "umweltify"
 include ':app'
