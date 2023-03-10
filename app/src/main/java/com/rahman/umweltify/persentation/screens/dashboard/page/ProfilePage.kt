@@ -101,6 +101,7 @@ fun ProfilePage(mainNav: NavController,authViewModel: AuthViewModel) {
                         }
                         SmallFloatingActionButton(
                             modifier = Modifier.padding(0.dp),
+                            shape = CircleShape,
                             onClick = {
                             }) {
                             Icon(
@@ -120,7 +121,7 @@ fun ProfilePage(mainNav: NavController,authViewModel: AuthViewModel) {
 
                 Text(
                     text = "Thomas Newman",
-                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold)
+                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.scrim)
                 )
 
             }
@@ -130,7 +131,7 @@ fun ProfilePage(mainNav: NavController,authViewModel: AuthViewModel) {
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(5),
                 colors = CardDefaults.elevatedCardColors(
-                    containerColor = Color.White,
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 ),
                 elevation = CardDefaults.elevatedCardElevation(
                     defaultElevation = 20.dp

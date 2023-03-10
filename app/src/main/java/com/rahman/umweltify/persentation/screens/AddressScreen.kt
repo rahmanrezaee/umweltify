@@ -10,7 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.twotone.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -64,7 +64,14 @@ fun AddressScreen(nav: NavController = NavController(LocalContext.current)) {
                         style = Typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                         overflow = TextOverflow.Ellipsis
                     )
-                }
+                },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        nav.popBackStack()
+                    }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = null)
+                    }
+                },
             )
         },
         floatingActionButton = {
@@ -115,10 +122,12 @@ fun AddressScreen(nav: NavController = NavController(LocalContext.current)) {
                         items(innerItem.size) {
                             val delete = SwipeAction(
                                 icon = {
-                                    Icon(Icons.TwoTone.Delete,
+                                    Icon(
+                                        Icons.TwoTone.Delete,
                                         tint = Color.White,
                                         modifier = Modifier.padding(10.dp),
-                                        contentDescription = null)
+                                        contentDescription = null
+                                    )
                                 },
                                 background = MaterialTheme.colorScheme.primary,
                                 onSwipe = {
@@ -194,14 +203,15 @@ fun AddressScreen(nav: NavController = NavController(LocalContext.current)) {
                         title = {
                             Text(text = "Address Form")
                         },
-                        actions = {
+                        navigationIcon = {
                             IconButton(onClick = {
                                 openDialog = false
                             }) {
-                                Icon(Icons.Rounded.Close, contentDescription = null)
+                                Icon(Icons.Default.ArrowBack, contentDescription = null)
                             }
-                        }
-                    )
+                        },
+
+                        )
                 },
                 content = {
                     Column(

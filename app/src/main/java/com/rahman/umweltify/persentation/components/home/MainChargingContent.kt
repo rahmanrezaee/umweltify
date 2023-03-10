@@ -16,10 +16,11 @@ import com.orbitalsonic.waterwave.WaterWaveView
 import com.rahman.umweltify.R
 import com.rahman.umweltify.persentation.viewModel.BatteryChargingViewModel
 import com.rahman.umweltify.persentation.viewModel.SetupViewModel
+import kotlin.math.roundToInt
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun MainChargingContent( batteryCharging: BatteryChargingViewModel,setupViewModel:SetupViewModel) {
+fun MainChargingContent(batteryCharging: BatteryChargingViewModel, setupViewModel: SetupViewModel) {
     Row(
         Modifier.height(250.dp)
     ) {
@@ -50,9 +51,10 @@ fun MainChargingContent( batteryCharging: BatteryChargingViewModel,setupViewMode
 
                     Text(text = "Temperature", style = MaterialTheme.typography.labelSmall)
 
-                    var temperature:Double? = batteryCharging.chargeState.value?.temperature?.div(10.0)
-                            Text(
-                        text = setupViewModel.convertTemp(temperature?:0.0),
+                    var temperature: Double? =
+                        batteryCharging.chargeState.value?.temperature?.div(10.0)
+                    Text(
+                        text = setupViewModel.convertTemp(temperature ?: 0.0),
                         style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
                     )
                     Spacer(modifier = Modifier.weight(1f))
@@ -70,7 +72,7 @@ fun MainChargingContent( batteryCharging: BatteryChargingViewModel,setupViewMode
 
             ElevatedCard(
                 colors = CardDefaults.elevatedCardColors(
-                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 ), elevation = CardDefaults.elevatedCardElevation(
                     defaultElevation = 20.dp
                 ),
@@ -99,7 +101,9 @@ fun MainChargingContent( batteryCharging: BatteryChargingViewModel,setupViewMode
                         ),
                         contentDescription = null,
                         modifier =
-                        Modifier.size(25.dp).rotate(90F),
+                        Modifier
+                            .size(25.dp)
+                            .rotate(90F),
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
@@ -107,7 +111,7 @@ fun MainChargingContent( batteryCharging: BatteryChargingViewModel,setupViewMode
         }
         ElevatedCard(
             colors = CardDefaults.elevatedCardColors(
-                 containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
             ), elevation = CardDefaults.elevatedCardElevation(
                 defaultElevation = 20.dp
             ),
@@ -144,7 +148,7 @@ fun MainChargingContent( batteryCharging: BatteryChargingViewModel,setupViewMode
                     }
                 },
                     update = {
-                        it.progress = (batteryCharging.chargeState.value?.level?:0 ) +20
+                        it.progress = (batteryCharging.chargeState.value?.level ?: 0) + 20
                     }
                 )
                 Column(
@@ -159,11 +163,15 @@ fun MainChargingContent( batteryCharging: BatteryChargingViewModel,setupViewMode
                         style = MaterialTheme.typography.labelSmall
                     )
                     Text(
-                        text = "${batteryCharging.chargeState.value?.level?:0}%",
+                        text = "${batteryCharging.chargeState.value?.level ?: 0}%",
                         style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
                     )
                     Spacer(modifier = Modifier.weight(1f))
-                    Text(text = "${batteryCharging.batteryInfo.value?.batteryCapacity?:0} mAh", style = MaterialTheme.typography.labelSmall)
+
+                    var cap = Math.round(
+                        (batteryCharging.batteryInfo.value?.batteryCapacity?.div(100000)?.roundToInt()?.toDouble()?.times(100) ?: 0.0)
+                    )
+                    Text(text = "${cap} mAh", style = MaterialTheme.typography.labelSmall)
                 }
             }
         }

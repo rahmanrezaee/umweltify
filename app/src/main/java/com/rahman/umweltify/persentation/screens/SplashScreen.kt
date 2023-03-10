@@ -4,10 +4,12 @@ package com.rahman.umweltify.persentation.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -26,7 +28,11 @@ import com.rahman.umweltify.persentation.viewModel.SetupViewModel
 
 @SuppressLint("PermissionLaunchedDuringComposition")
 @Composable
-fun SplashScreen(nav: NavController = NavController(LocalContext.current,),authViewModel: AuthViewModel,setupViewModel: SetupViewModel ) {
+fun SplashScreen(
+    nav: NavController = NavController(LocalContext.current),
+    authViewModel: AuthViewModel,
+    setupViewModel: SetupViewModel
+) {
 
     var context = LocalContext.current;
 
@@ -53,7 +59,9 @@ fun SplashScreen(nav: NavController = NavController(LocalContext.current,),authV
         }
     }
     Column(
-        Modifier.fillMaxSize(),
+        Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
         Arrangement.Center,
         Alignment.CenterHorizontally
     ) {

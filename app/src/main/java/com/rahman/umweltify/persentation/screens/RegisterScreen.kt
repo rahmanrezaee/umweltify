@@ -5,7 +5,6 @@ package com.rahman.umweltify.persentation.screens
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -15,18 +14,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.rahman.umweltify.R
+import com.rahman.umweltify.persentation.components.CustomButton
 import com.rahman.umweltify.persentation.components.CustomTextField
 import com.rahman.umweltify.persentation.routes.Routes
-import com.rahman.umweltify.persentation.theme.BatteryTheme
-
+import com.rahman.umweltify.persentation.util.isValidPassword
+import com.rahman.umweltify.persentation.viewModel.AuthViewModel
+import com.rahman.umweltify.persentation.viewModel.RegisterState
 
 @SuppressLint("UnrememberedMutableState", "UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun RegisterScreen(nav: NavController = NavController(LocalContext.current)) {
+fun RegisterScreen(nav: NavController = NavController(LocalContext.current), authVm:AuthViewModel) {
     var email by remember {
         mutableStateOf("")
     }
@@ -41,11 +41,16 @@ fun RegisterScreen(nav: NavController = NavController(LocalContext.current)) {
         mutableStateOf(false)
     }
     val isFormValid by derivedStateOf {
-        email.isNotBlank() && password.length >= 2 && fullname.isNotBlank()
+        password.isValidPassword()
     }
 
+
+    val state by authVm.registerState.collectAsState()
+    val snackbarRegisterHostState = remember { SnackbarHostState() }
+
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = MaterialTheme.colorScheme.background,
+        snackbarHost = { SnackbarHost(snackbarRegisterHostState) },
     ) {
 
         Column(
@@ -64,20 +69,20 @@ fun RegisterScreen(nav: NavController = NavController(LocalContext.current)) {
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            CustomTextField(
-                value = fullname,
-                onChange = {
-                    fullname = it
-                },
-                placeHolder = {
-                    Text(text = "Full Name")
-                },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                )
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
+//            CustomTextField(
+//                value = fullname,
+//                onChange = {
+//                    fullname = it
+//                },
+//                placeHolder = {
+//                    Text(text = "Full Name")
+//                },
+//                keyboardOptions = KeyboardOptions(
+//                    keyboardType = KeyboardType.Text,
+//                )
+//            )
+//
+//            Spacer(modifier = Modifier.height(8.dp))
 
             CustomTextField(
                 value = email,
@@ -116,17 +121,30 @@ fun RegisterScreen(nav: NavController = NavController(LocalContext.current)) {
                 }
             )
 
+
+            var context = LocalContext.current
             Spacer(modifier = Modifier.height(30.dp))
-            Button(
-                onClick = {
-                    nav.navigate(Routes.Dashboard.name)
-                },
-                enabled = isFormValid,
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Text(text = "Register")
+
+            state.let { state ->
+                if (state is RegisterState.FAILURE) {
+                    val message = state.message
+                    LaunchedEffect(key1 = message) {
+                        snackbarRegisterHostState.showSnackbar(
+                            message,
+                        )
+                    }
+                }
             }
+
+            CustomButton(
+                label = "Register",
+                isLoading = state == RegisterState.LOADING,
+                enable = isFormValid
+            ) {
+                authVm.register(email, password,nav);
+            }
+
+            
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -152,12 +170,3 @@ fun RegisterScreen(nav: NavController = NavController(LocalContext.current)) {
 }
 
 
-@Preview
-@Composable
-fun PreviewRegisterScreen() {
-    BatteryTheme(
-        darkTheme = false
-    ) {
-        RegisterScreen()
-    }
-}

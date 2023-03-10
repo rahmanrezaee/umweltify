@@ -26,6 +26,7 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
+
 @SuppressLint("CheckResult")
 @HiltViewModel
 class BatteryChargingViewModel @Inject constructor(
@@ -52,7 +53,7 @@ class BatteryChargingViewModel @Inject constructor(
     fun getDashboardData(refreshInductor: Boolean = false) {
         if (refreshInductor) {
             dashboardItems.value = RequestState.LoadingRefresh
-        }else{
+        } else {
             dashboardItems.value = RequestState.Loading
         }
         try {
@@ -94,12 +95,23 @@ class BatteryChargingViewModel @Inject constructor(
             batteryInfo.value = BatteryChangeData(
                 averageAmpere = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_AVERAGE),
                 currentAmpere = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW),
-                batteryCapacity = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER),
+
+                batteryCapacity = getBatteryCapacity(),
                 remainingEnergy = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_ENERGY_COUNTER)
             );
 
         }
 
+
+    }
+
+    private fun getBatteryCapacity(): Double {
+
+        val chargeCounter =
+            batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER)
+        val capacity = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
+
+        return if (chargeCounter == Int.MIN_VALUE || capacity == Int.MIN_VALUE) 0.0 else (chargeCounter / capacity * 100).toDouble()
 
     }
 
@@ -121,6 +133,6 @@ class BatteryChargingViewModel @Inject constructor(
 data class BatteryChangeData(
     val currentAmpere: Int,
     val averageAmpere: Int,
-    val batteryCapacity: Int,
+    val batteryCapacity: Double,
     val remainingEnergy: Int
 )

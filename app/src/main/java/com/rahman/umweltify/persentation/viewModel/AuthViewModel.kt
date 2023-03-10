@@ -7,7 +7,7 @@ import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.rahman.umweltify.network.responses.LoginResponse
+import com.rahman.umweltify.network.CustomHttpException
 import com.rahman.umweltify.persentation.constants.SharedConstant
 import com.rahman.umweltify.persentation.routes.Routes
 import com.rahman.umweltify.repository.AuthRepository
@@ -25,6 +25,7 @@ class AuthViewModel
 ) :
     ViewModel() {
     val loginState = MutableStateFlow<LoginState>(LoginState.START)
+    val registerState = MutableStateFlow<RegisterState>(RegisterState.START)
 
     init {
         Log.i("loginState", "Init ${loginState.value}")
@@ -33,15 +34,11 @@ class AuthViewModel
     suspend fun checkIsLogin() {
 
         var token = preferences.getString(SharedConstant.token, "");
-
-
         Log.i("loginState", "before ${loginState.value}")
-
         if (token != null && token.isNotBlank())
             loginState.emit(LoginState.AUTHORIZED)
         else
             loginState.emit(LoginState.UNAUTHORIZED)
-
         Log.i("loginState", "after check ${loginState.value}")
 
     }
@@ -50,23 +47,27 @@ class AuthViewModel
         viewModelScope.launch {
             loginState.emit(LoginState.LOADING)
             repository.login(email, password).onSuccess { data ->
-                Log.i("ResultRegister", "Result accessToken ${data.accessToken}")
+                Log.i("ResultRegister", "Result accessToken ${data.data}")
                 loginState.emit(LoginState.AUTHORIZED)
-                saveToken(data);
+                saveToken(data.data);
                 nav.navigate(Routes.Dashboard.name) {
                     popUpTo(nav.graph.id)
                 }
             }.onFailure {
-                loginState.emit(LoginState.FAILURE(it.localizedMessage!!))
+                if (it is CustomHttpException) {
+                    loginState.emit(LoginState.FAILURE(it.body.getString("Message")))
+                } else {
+                    loginState.emit(LoginState.FAILURE(it.localizedMessage!!))
+                }
             }
         }
     }
 
-    fun saveToken(userData: LoginResponse) {
-        Log.i("TokenPreference", "token ${userData.accessToken}")
+    fun saveToken(token: String) {
+        Log.i("TokenPreference", "token ${token}")
         preferences.edit {
-            this.putString(SharedConstant.token, userData.accessToken)
-            this.putString(SharedConstant.refreshToken, userData.refreshToken)
+            this.putString(SharedConstant.token, token)
+//            this.putString(SharedConstant.refreshToken, token)
             this.apply()
         }
         val value = preferences.getString(SharedConstant.token, "");
@@ -77,7 +78,7 @@ class AuthViewModel
 
         preferences.edit {
             this.remove(SharedConstant.token)
-            this.remove(SharedConstant.refreshToken)
+//            this.remove(SharedConstant.refreshToken)
             this.apply()
         }
     }
@@ -92,6 +93,32 @@ class AuthViewModel
             }
         }
     }
+
+    fun register(email: String, password: String, nav: NavController) {
+
+        viewModelScope.launch {
+            registerState.emit(RegisterState.LOADING)
+            repository.register(email, password).onSuccess { data ->
+                Log.i("ResultRegister", "Result accessToken ${data}")
+                saveToken(data.data);
+                loginState.emit(LoginState.AUTHORIZED)
+                registerState.emit(RegisterState.COMPLETE)
+                nav.navigate(Routes.Dashboard.name) {
+                    popUpTo(nav.graph.id)
+                }
+            }.onFailure {
+                if (it is CustomHttpException) {
+
+                    registerState.emit(RegisterState.FAILURE(it.body.getString("Message")))
+                    Log.i("ResultRegister", "error ${it.body.getString("Message")}")
+                } else {
+                    registerState.emit(RegisterState.FAILURE(it.localizedMessage!!))
+
+                }
+            }
+        }
+
+    }
 }
 
 
@@ -101,4 +128,12 @@ sealed class LoginState {
     object LOADING : LoginState()
     object AUTHORIZED : LoginState()
     data class FAILURE(val message: String) : LoginState()
+}
+
+
+sealed class RegisterState {
+    object START : RegisterState()
+    object LOADING : RegisterState()
+    object COMPLETE : RegisterState()
+    data class FAILURE(val message: String) : RegisterState()
 }

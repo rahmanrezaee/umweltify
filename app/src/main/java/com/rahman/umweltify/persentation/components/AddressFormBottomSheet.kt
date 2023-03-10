@@ -7,9 +7,9 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -33,7 +33,7 @@ fun AddressFormBottomSheet(addressVM: AddressViewModel, onCloseClick: () -> Unit
 
     Column(
         Modifier
-            .padding(vertical = 20.dp, horizontal = 20.dp),
+            .padding(vertical = 20.dp, horizontal = 10.dp),
         Arrangement.SpaceBetween,
     ) {
 
@@ -42,7 +42,7 @@ fun AddressFormBottomSheet(addressVM: AddressViewModel, onCloseClick: () -> Unit
         }
 
         val isFormValid by derivedStateOf {
-            name.isNotBlank()
+            name.isNotBlank() && name.length > 2
         }
         CustomTextField(
             value = name,
@@ -50,7 +50,7 @@ fun AddressFormBottomSheet(addressVM: AddressViewModel, onCloseClick: () -> Unit
                 name = it
             },
             placeHolder = {
-                Text(text = "Address Name")
+                Text(text = "Address Name", color = MaterialTheme.colorScheme.scrim)
             },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
@@ -58,45 +58,41 @@ fun AddressFormBottomSheet(addressVM: AddressViewModel, onCloseClick: () -> Unit
         )
         Spacer(modifier = Modifier.height(15.dp))
 
-        androidx.compose.material3.Button(
-            onClick = {
-                if (ActivityCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-
-                }
-                fusedLocationClient.lastLocation
-                    .addOnSuccessListener { location : Location? ->
-
-                        addressVM.insertAddress(
-                            AddressED(
-                                placeName = name,
-                                longitude = location?.longitude?: 0.0,
-                                latitude = location?.latitude?: 0.0
-                            )
-                        )
-                        name = ""
-                        onCloseClick.invoke()
-
-                    }.addOnFailureListener {
-
-                        it.printStackTrace()
-                        Toast.makeText(context,"Error To Get Current Location",Toast.LENGTH_SHORT).show()
-                    }
-
-
-            },
-            enabled = isFormValid,
+        CustomButton(
+            label = "Save",
+            enable = isFormValid,
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp)
+
         ) {
-            androidx.compose.material3.Text(text = "Save")
+            if (ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+
+            }
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location : Location? ->
+                    addressVM.insertAddress(
+                        AddressED(
+                            placeName = name,
+                            longitude = location?.longitude?: 0.0,
+                            latitude = location?.latitude?: 0.0
+                        )
+                    )
+                    name = ""
+                    onCloseClick.invoke()
+
+                }.addOnFailureListener {
+                    it.printStackTrace()
+                    Toast.makeText(context,"Error To Get Current Location",Toast.LENGTH_SHORT).show()
+                }
+
         }
+
 
     }
 

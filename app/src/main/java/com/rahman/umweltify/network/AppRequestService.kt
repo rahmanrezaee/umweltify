@@ -13,7 +13,7 @@ interface AppRequestService {
     suspend fun login(@Body loginRequest: LoginRequestBody):Result<LoginResponse>
 
     @POST("Account/SignUp")
-    suspend fun register(@Body registerRequest: RegisterRequestBody):Result<LoginResponse>
+    suspend fun register(@Body registerRequest: RegisterRequestBody):Result<RegisterResponse>
 
     @POST("consumption/addmeasurement")
     suspend fun insertBattery(@Body battery:BatteryModel) : Result<AddBatteryResponse>

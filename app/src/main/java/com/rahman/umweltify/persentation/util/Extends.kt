@@ -13,3 +13,14 @@ fun Context.findActivity(): Activity {
     }
     throw IllegalStateException("Permissions should be called in the context of an Activity")
 }
+
+
+fun String.isValidPassword(): Boolean {
+    if (this.length < 6) return false
+    if (this.filter { it.isDigit() }.firstOrNull() == null) return false
+    if (this.filter { it.isLetter() }.filter { it.isUpperCase() }.firstOrNull() == null) return false
+    if (this.filter { it.isLetter() }.filter { it.isLowerCase() }.firstOrNull() == null) return false
+    if (this.filter { !it.isLetterOrDigit() }.firstOrNull() == null) return false
+
+    return true
+}

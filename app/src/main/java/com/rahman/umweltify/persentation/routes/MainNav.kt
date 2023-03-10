@@ -44,7 +44,7 @@ fun MainNav(setupViewModel: SetupViewModel) {
                 LoginScreen(nav = navController,authViewModel)
         }
         composable(Routes.RegisterScreen.name){
-            RegisterScreen(nav = navController)
+            RegisterScreen(nav = navController,authViewModel)
         }
         composable(Routes.ForgetPasswordScreen.name){
             ForgetPassword(nav = navController)

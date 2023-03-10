@@ -30,12 +30,14 @@ import com.rahman.umweltify.persentation.viewModel.LoginState
     "StateFlowValueCalledInComposition"
 )
 @Composable
-fun LoginScreen(nav: NavController = NavController(LocalContext.current),authViewModel: AuthViewModel) {
-
+fun LoginScreen(
+    nav: NavController = NavController(LocalContext.current),
+    authViewModel: AuthViewModel
+) {
 
 
     val state by authViewModel.loginState.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarLoginHostState = remember { SnackbarHostState() }
 
 
     var email by remember {
@@ -53,142 +55,132 @@ fun LoginScreen(nav: NavController = NavController(LocalContext.current),authVie
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { SnackbarHost(snackbarLoginHostState) },
     ) {
 
-    Box(
-        contentAlignment = Alignment.BottomEnd,
-    ) {
-
-        Column(
-            Modifier
-                .fillMaxSize()
-                .padding(32.dp)
+        Box(
+            contentAlignment = Alignment.BottomEnd,
         ) {
 
-            Image(
-                painter = painterResource(id = R.drawable.logo),
-                contentDescription = "App Logo",
-                modifier = Modifier
-                    .weight(1f)
-                    .size(100.dp),
-            )
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .padding(32.dp)
+            ) {
 
-            Text(text = "Welcome Back!", style = MaterialTheme.typography.headlineMedium)
-
-            Spacer(modifier = Modifier.height(15.dp))
-
-            CustomTextField(
-                value = email,
-                onChange = {
-                    email = it
-                },
-                placeHolder = {
-                    Text(text = "Email")
-                },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Email,
+                Image(
+                    painter = painterResource(id = R.drawable.logo),
+                    contentDescription = "App Logo",
+                    modifier = Modifier
+                        .weight(1f)
+                        .size(100.dp),
                 )
-            )
 
-            Spacer(modifier = Modifier.height(8.dp))
+                Text(text = "Welcome Back!", style = MaterialTheme.typography.headlineMedium)
 
-            CustomTextField(
-                value = password,
-                onChange = {
-                    password = it
-                },
-                placeHolder = {
-                    Text(text = "Password")
-                },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password,
-                ),
-                visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = {
-                    IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
-                        Icon(
-                            painterResource(id = if (isPasswordVisible) R.drawable.round_visibility else R.drawable.round_visibility_off),
-                            contentDescription = "Password Toggle"
-                        )
+                Spacer(modifier = Modifier.height(15.dp))
+
+                CustomTextField(
+                    value = email,
+                    onChange = {
+                        email = it
+                    },
+                    placeHolder = {
+                        Text(text = "Email")
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Email,
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                CustomTextField(
+                    value = password,
+                    onChange = {
+                        password = it
+                    },
+                    placeHolder = {
+                        Text(text = "Password")
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Password,
+                    ),
+                    visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                            Icon(
+                                painterResource(id = if (isPasswordVisible) R.drawable.round_visibility else R.drawable.round_visibility_off),
+                                contentDescription = "Password Toggle"
+                            )
+                        }
                     }
-                }
-            )
+                )
 
-            Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(30.dp))
 
 
-            state.let { state ->
-                when (state) {
-                    LoginState.START -> {}
-                    LoginState.LOADING -> {}
-                    LoginState.UNAUTHORIZED ->{}
-                    is LoginState.FAILURE -> {
+                state.let { state ->
+                    if (state is LoginState.FAILURE) {
                         val message = state.message
                         LaunchedEffect(key1 = message) {
-                            snackbarHostState.showSnackbar(
+                            snackbarLoginHostState.showSnackbar(
                                 message,
                             )
                         }
                     }
-                    LoginState.AUTHORIZED -> {
+                }
 
+                CustomButton(
+                    label = "Log In",
+                    isLoading = state == LoginState.LOADING,
+                    enable = isFormValid
+                ) {
+                    authViewModel.login(email, password, nav);
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    TextButton(onClick = {
+                        nav.navigate(Routes.RegisterScreen.name) {
+                            popUpTo(nav.graph.id)
+                        }
+                    }) {
+                        Text(text = "Sign Up", color = MaterialTheme.colorScheme.scrim)
+                    }
+                    TextButton(onClick = {
+                        nav.navigate(Routes.ForgetPasswordScreen.name)
+                    }) {
+                        Text(text = "Forgot Password?", color = MaterialTheme.colorScheme.scrim)
                     }
                 }
+                Spacer(modifier = Modifier.weight(1f))
+
             }
 
-            var context = LocalContext.current
-            CustomButton(
-                label = "Log In",
-                isLoading = state == LoginState.LOADING,
-                enable = isFormValid
-            ) {
-                authViewModel.login(email, password,nav);
-            }
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                Modifier.padding(bottom = 10.dp, end = 10.dp),
+                horizontalArrangement = Arrangement.End
             ) {
-                TextButton(onClick = {
-                    nav.navigate(Routes.RegisterScreen.name) {
-                        popUpTo(nav.graph.id)
-                    }
-                }) {
-                    Text(text = "Sign Up", color = MaterialTheme.colorScheme.scrim)
-                }
-                TextButton(onClick = {
-                    nav.navigate(Routes.ForgetPasswordScreen.name)
-                }) {
-                    Text(text = "Forgot Password?", color = MaterialTheme.colorScheme.scrim)
+                FloatingActionButton(
+                    onClick = {
+                        authViewModel.loginState.value = LoginState.UNAUTHORIZED;
+                        nav.navigate(Routes.Dashboard.name) {
+                            popUpTo(nav.graph.id)
+                        }
+                    },
+                    containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(15.dp, 15.dp, 15.dp, 15.dp))
+                ) {
+                    Text(
+                        "Skip",
+                        color = MaterialTheme.colorScheme.secondaryContainer
+                    )
                 }
             }
-            Spacer(modifier = Modifier.weight(1f))
-
         }
-
-        Row(
-            Modifier.padding(bottom = 10.dp,end = 10.dp),
-            horizontalArrangement = Arrangement.End
-        ){
-            FloatingActionButton(
-                onClick = {
-                    authViewModel.loginState.value = LoginState.UNAUTHORIZED;
-                    nav.navigate(Routes.Dashboard.name) {
-                        popUpTo(nav.graph.id)
-                    }
-                },
-                containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(15.dp, 15.dp, 15.dp, 15.dp))
-            ) {
-                Text(
-                    "Skip",
-                    color = MaterialTheme.colorScheme.secondaryContainer
-                )
-            }
-        }
-    }
-
 
 
     }

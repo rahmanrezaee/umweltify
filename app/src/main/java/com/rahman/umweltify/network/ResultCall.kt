@@ -2,11 +2,13 @@ package com.rahman.umweltify.network
 
 import okhttp3.Request
 import okio.Timeout
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.HttpException
 import retrofit2.Response
 import java.io.IOException
+
 
 class ResultCall<T>(val delegate: Call<T>) :
     Call<Result<T>> {
@@ -24,12 +26,18 @@ class ResultCall<T>(val delegate: Call<T>) :
                             )
                         )
                     } else {
+
+
+                        val jObjError = JSONObject(response.errorBody()!!.string())
+
                         callback.onResponse(
                             this@ResultCall,
                             Response.success(
                                 Result.failure(
-                                    HttpException(
-                                        response
+                                    CustomHttpException(
+                                        code = response.code(),
+                                        message = response.message(),
+                                        body = jObjError
                                     )
                                 )
                             )
@@ -81,3 +89,9 @@ class ResultCall<T>(val delegate: Call<T>) :
     }
 }
 
+
+class CustomHttpException(
+    override val message:String,
+    val code:Int,
+    val body: JSONObject
+) : RuntimeException()

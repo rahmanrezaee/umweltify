@@ -68,7 +68,10 @@ fun SettingScreen(
                 item {
                     Text(
                         text = "General",
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            color = MaterialTheme.colorScheme.scrim
+                        ),
+
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(10.dp)

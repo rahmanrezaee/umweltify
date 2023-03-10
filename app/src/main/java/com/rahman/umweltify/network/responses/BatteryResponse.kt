@@ -3,19 +3,22 @@ package com.rahman.umweltify.network.responses
 import com.google.gson.annotations.SerializedName
 import com.rahman.umweltify.network.model.BatteryDto
 import com.rahman.umweltify.network.model.DashboardItemDto
-import com.rahman.umweltify.network.model.LoginDto
 
 data class BatteryResponse(
     @SerializedName("data")
     var date: List<BatteryDto>)
 
 data class LoginResponse (
-    @SerializedName("user")
-    var user: LoginDto,
-    @SerializedName("accessToken")
-    val accessToken:String,
-    @SerializedName("refreshToken")
-    val refreshToken:String
+    @SerializedName("Data")
+    var data:String,
+    @SerializedName("Message")
+    val message:String,
+)
+data class RegisterResponse (
+    @SerializedName("Data")
+    var data:String,
+    @SerializedName("Message")
+    val message:String,
 )
 data class DashboardResponse (
     @SerializedName("Data")
