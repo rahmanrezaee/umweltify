@@ -14,6 +14,7 @@ import com.rahman.umweltify.persentation.screens.dashboard.page.HomePage
 import com.rahman.umweltify.persentation.screens.dashboard.page.ProfilePage
 import com.rahman.umweltify.persentation.screens.dashboard.page.ShopPage
 import com.rahman.umweltify.persentation.viewModel.AuthViewModel
+import com.rahman.umweltify.persentation.viewModel.BatteryChargingViewModel
 import com.rahman.umweltify.persentation.viewModel.SetupViewModel
 
 @Composable
@@ -22,17 +23,19 @@ fun MainNav(setupViewModel: SetupViewModel) {
     val authViewModel: AuthViewModel = hiltViewModel()
     val navController = rememberNavController()
 
+    var batteryCharging: BatteryChargingViewModel = hiltViewModel()
+
     NavHost(
         navController = navController,
         startDestination = Routes.SplashScreen.name ){
         composable(Routes.Dashboard.name){
-            Dashboard(nav = navController,authViewModel,setupViewModel)
+            Dashboard(nav = navController,authViewModel,setupViewModel,batteryCharging)
         }
         composable(Routes.AddressScreen.name){
             AddressScreen(nav = navController)
         }
         composable(Routes.SplashScreen.name){
-                SplashScreen(nav = navController,authViewModel,setupViewModel)
+            SplashScreen(nav = navController,authViewModel,setupViewModel)
         }
         composable(Routes.SettingScreen.name){
             SettingScreen(nav = navController,setupViewModel)
@@ -57,7 +60,7 @@ fun MainNav(setupViewModel: SetupViewModel) {
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun NavigationGraph(navController: NavHostController,mainNav:NavHostController, authViewModel: AuthViewModel,setupViewModel:SetupViewModel) {
+fun NavigationGraph(navController: NavHostController,mainNav:NavHostController, authViewModel: AuthViewModel,setupViewModel:SetupViewModel,batterVM: BatteryChargingViewModel) {
 
 
     NavHost(
@@ -65,7 +68,7 @@ fun NavigationGraph(navController: NavHostController,mainNav:NavHostController, 
         startDestination = BottomNavItem.Home.screen_route
     ) {
         composable(BottomNavItem.Home.screen_route,) {
-            HomePage(mainNav,setupViewModel)
+            HomePage(mainNav,setupViewModel,batterVM)
         }
         composable(BottomNavItem.Action.screen_route) {
             ActionPage()

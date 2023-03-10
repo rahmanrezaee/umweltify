@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.github.fengdai.compose.pulltorefresh.PullToRefresh
 import com.github.fengdai.compose.pulltorefresh.rememberPullToRefreshState
@@ -28,9 +27,8 @@ import com.rahman.umweltify.persentation.viewModel.SetupViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("CheckResult", "UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun HomePage(mainNav: NavController, setupViewModel: SetupViewModel) {
+fun HomePage(mainNav: NavController, setupViewModel: SetupViewModel,batteryCharging:BatteryChargingViewModel) {
 
-    var batteryCharging: BatteryChargingViewModel = hiltViewModel()
     Scaffold(
         topBar = {
             TopAppBar(

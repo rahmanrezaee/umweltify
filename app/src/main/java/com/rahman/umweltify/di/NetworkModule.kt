@@ -1,8 +1,8 @@
 package com.rahman.umweltify.di
 
-import com.rahman.umweltify.network.AppInterceptor
+import com.rahman.umweltify.network.interceptor.AppInterceptor
 import com.rahman.umweltify.network.AppRequestService
-import com.rahman.umweltify.network.ResultCallAdapterFactory
+import com.rahman.umweltify.network.util.ResultCallAdapterFactory
 import com.rahman.umweltify.network.model.BatteryDtoMapper
 import com.rahman.umweltify.persentation.constants.constant
 import dagger.Module

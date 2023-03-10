@@ -1,7 +1,6 @@
-package com.rahman.umweltify.network
+package com.rahman.umweltify.network.interceptor
 
 import android.content.SharedPreferences
-import com.rahman.umweltify.persentation.constants.SharedConstant
 import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
@@ -14,9 +13,9 @@ class AppInterceptor @Inject constructor() : Interceptor{
     override fun intercept(chain: Interceptor.Chain): Response {
 
         val request = chain.request().newBuilder()
-        val token:String?  = sharedPreferences.getString(SharedConstant.token,"");
-        if(token !=null && token.isNotBlank())
-            request.addHeader("Authorization","token $token")
+//        val token:String?  = sharedPreferences.getString(SharedConstant.token,"");
+//        if(token !=null && token.isNotBlank())
+//            request.addHeader("Authorization","token $token")
         return chain.proceed(request.build())
     }
 }

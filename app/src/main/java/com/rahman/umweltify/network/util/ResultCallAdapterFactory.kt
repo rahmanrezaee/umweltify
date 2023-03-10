@@ -1,6 +1,7 @@
-package com.rahman.umweltify.network
+package com.rahman.umweltify.network.util
 
 
+import com.rahman.umweltify.network.ResultCall
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Retrofit

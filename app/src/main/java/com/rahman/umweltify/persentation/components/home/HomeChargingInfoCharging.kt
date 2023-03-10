@@ -9,6 +9,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.rahman.umweltify.R
+import com.rahman.umweltify.persentation.util.BatteryUtil
 import com.rahman.umweltify.persentation.viewModel.BatteryChargingViewModel
 
 @Composable
@@ -39,7 +40,7 @@ fun HomeChargingInfoCharging(batteryCharging: BatteryChargingViewModel) {
 
                 Text(text = "Battery Ampere", style = MaterialTheme.typography.labelSmall)
                 Text(
-                    text = "${batteryCharging.batteryInfo.value?.currentAmpere?:0} mA",
+                    text = "${BatteryUtil.getBatteryCurrentNowInAmperes(batteryCharging.batteryInfo.value?.currentAmpere?:0)} mA",
                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
                 )
                 Spacer(modifier = Modifier.weight(1f))

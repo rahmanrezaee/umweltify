@@ -21,6 +21,7 @@ import com.rahman.umweltify.persentation.AddressActivity
 import com.rahman.umweltify.persentation.BaseApplication
 import com.rahman.umweltify.persentation.MainActivity
 import com.rahman.umweltify.persentation.constants.SharedConstant
+import com.rahman.umweltify.persentation.util.BatteryUtil
 import com.rahman.umweltify.persentation.util.TimeUtility
 import com.rahman.umweltify.repository.AddressRepository
 import com.rahman.umweltify.repository.BatteryRepositoryImp
@@ -86,7 +87,7 @@ class BatteryService : Service() {
         val contentIntent = PendingIntent.getActivity(
             this,
             1, intentMain,
-            PendingIntent.FLAG_CANCEL_CURRENT
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
         notification = NotificationCompat.Builder(this, getString(R.string.channel_id))
@@ -133,7 +134,11 @@ class BatteryService : Service() {
                 "ChargingState ${chargeState?.isCharging} ${batteryState.isCharging}"
             )
             if (chargeState?.isCharging == null || chargeState?.isCharging != batteryState.isCharging) {
-                Log.i("BatteryService", "ShowNotification")
+                Log.i("BatteryService", "ShowNotification ${chargeState?.isCharging}")
+
+                chargeState?.isCharging?.let {
+                    sendBackgroundData()
+                }
 
                 if (chargeState?.isCharging != null && batteryState.isCharging) {
                     try {
@@ -141,7 +146,10 @@ class BatteryService : Service() {
                             addressRepository.getAll().take(1).collect { items ->
                                 if (items.isNotEmpty()) {
                                     val selectedAddress =
-                                        sharedPreferences.getString(SharedConstant.addressName, "")
+                                        sharedPreferences.getString(
+                                            SharedConstant.addressName,
+                                            ""
+                                        )
                                     if (selectedAddress != null && selectedAddress.isNotBlank()) {
                                         if (!(items.size == 1 && items.first().placeName == selectedAddress)) {
                                             showSelectLocationNotification()
@@ -157,9 +165,7 @@ class BatteryService : Service() {
                         Toast.makeText(context, "${e.message}", Toast.LENGTH_SHORT).show()
                     }
                 }
-                if (chargeState?.isCharging != null) {
-                    sendBackgroundData()
-                }
+
                 chargeState = batteryState;
                 groupId = UUID.randomUUID().toString();
                 updateNotification()
@@ -177,6 +183,7 @@ class BatteryService : Service() {
 
 
         var lat = sharedPreferences.getFloat(SharedConstant.addressLat, 0f);
+        var userId = sharedPreferences.getString(SharedConstant.token, "");
         var long = sharedPreferences.getFloat(SharedConstant.addressLon, 0f);
         Log.i("serviceConsole", "lat $lat, long $long")
 
@@ -197,7 +204,7 @@ class BatteryService : Service() {
                         TimeUtility.convertUTC(result.last().endTime!!);
 
                     val batteryBody = BatteryModel(
-                        userId = "",
+                        userId = userId ?: "",
                         averageVoltage = getAverage(
                             result.map { item ->
                                 item.voltage!!
@@ -218,9 +225,8 @@ class BatteryService : Service() {
                         from = endTime,
                     );
 
-
+                    Log.i("ResultBattery", "UserId ${batteryBody.userId}")
                     batteryRepositoryImp.insertToServer(batteryBody).onSuccess { data ->
-                        Log.i("ResultBattery", "Result ${data.toString()}")
 
                     }.onFailure {
                         Log.i("ResultBattery", "Error ${it.localizedMessage!!}")
@@ -300,11 +306,11 @@ class BatteryService : Service() {
 
     private fun updateNotification() {
 
+
         val currentNow = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW)
         val level = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
 //        val en = batteryManager.getIntProperty(BatteryManager.Batter)
 
-        val voltage = batteryManager.getIntProperty(BatteryManager.BATTERY_HEALTH_OVER_VOLTAGE)
 
         serviceScope.launch {
             batteryRepositoryImp.insertOne(
@@ -313,16 +319,15 @@ class BatteryService : Service() {
                     level = level,
                     isCharging = chargeState?.isCharging,
                     group = groupId,
-                    ampere = currentNow,
-                    watt = currentNow,
+                    ampere = BatteryUtil.getBatteryCurrentNowInAmperes(currentNow).toInt(),
+                    watt = BatteryUtil.getBatteryCurrentNowInWatt(currentNow,chargeState?.voltage?:1).toInt(),
                     startTime = System.currentTimeMillis(),
                     endTime = System.currentTimeMillis() + 10000,
-
-                    )
+                )
             )
             val updatedNotification = notification
                 .setSmallIcon(iconFor(level))
-                .setContentTitle("Ampere: ${currentNow?:0} mA")
+                .setContentTitle("Ampere: ${BatteryUtil.getBatteryCurrentNowInAmperes(currentNow)} mA")
                 .setContentText("Voltage: ${chargeState?.voltage} mV")
 
             notificationManager.notify(1, updatedNotification.build())

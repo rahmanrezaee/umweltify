@@ -30,11 +30,12 @@ import com.rahman.umweltify.R
 import com.rahman.umweltify.persentation.routes.Routes
 import com.rahman.umweltify.persentation.theme.Typography
 import com.rahman.umweltify.persentation.viewModel.AuthViewModel
+import com.rahman.umweltify.persentation.viewModel.LoginState
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfilePage(mainNav: NavController,authViewModel: AuthViewModel) {
+fun ProfilePage(mainNav: NavController, authViewModel: AuthViewModel) {
 
     val context = LocalContext.current;
     val localConfig = LocalConfiguration.current
@@ -42,9 +43,9 @@ fun ProfilePage(mainNav: NavController,authViewModel: AuthViewModel) {
 
     Scaffold(
         topBar = {
-           ProfileTopBar(){
-               authViewModel.logout(mainNav);
-           }
+            ProfileTopBar() {
+                authViewModel.logout(mainNav);
+            }
         },
     ) {
 
@@ -56,6 +57,8 @@ fun ProfilePage(mainNav: NavController,authViewModel: AuthViewModel) {
 
         ) {
             Spacer(modifier = Modifier.height(65.dp))
+
+
             Column(
                 modifier = Modifier
                     .height(250.dp)
@@ -64,65 +67,84 @@ fun ProfilePage(mainNav: NavController,authViewModel: AuthViewModel) {
                 Alignment.CenterHorizontally
             ) {
 
-                Row(
-                    Modifier.fillMaxWidth(),
-                    Arrangement.Center,
-                    Alignment.CenterVertically
-                ) {
+                if (authViewModel.loginState.value is LoginState.AUTHORIZED) {
 
-                    Box(
-                        contentAlignment = Alignment.BottomEnd
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        Arrangement.Center,
+                        Alignment.CenterVertically
                     ) {
-                        ElevatedCard(
-                            modifier = Modifier
-                                .width(150.dp)
-                                .height(150.dp)
-                                .padding(10.dp),
-                            shape = CircleShape,
-                            colors = CardDefaults.elevatedCardColors(
-                                containerColor = Color.White,
-                            ),
 
-                            elevation = CardDefaults.elevatedCardElevation(
-                                defaultElevation = 20.dp
-                            ),
+                        Box(
+                            contentAlignment = Alignment.BottomEnd
                         ) {
-                            AsyncImage(
-                                model = ImageRequest.Builder(context)
-                                    .data("https://img.freepik.com/free-photo/portrait-happy-young-woman-looking-camera_23-2147892777.jpg?w=2000")
-                                    .crossfade(true)
-                                    .build(),
-                                placeholder = painterResource(R.drawable.placehoder_user),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
+                            ElevatedCard(
                                 modifier = Modifier
-                                    .fillMaxSize()
-                            )
+                                    .width(150.dp)
+                                    .height(150.dp)
+                                    .padding(10.dp),
+                                shape = CircleShape,
+                                colors = CardDefaults.elevatedCardColors(
+                                    containerColor = Color.White,
+                                ),
+
+                                elevation = CardDefaults.elevatedCardElevation(
+                                    defaultElevation = 20.dp
+                                ),
+                            ) {
+                                AsyncImage(
+                                    model = ImageRequest.Builder(context)
+                                        .data("https://img.freepik.com/free-photo/portrait-happy-young-woman-looking-camera_23-2147892777.jpg?w=2000")
+                                        .crossfade(true)
+                                        .build(),
+                                    placeholder = painterResource(R.drawable.placehoder_user),
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                )
+                            }
+                            SmallFloatingActionButton(
+                                modifier = Modifier.padding(0.dp),
+                                shape = CircleShape,
+                                onClick = {
+                                }) {
+                                Icon(
+                                    Icons.Rounded.Edit,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
                         }
-                        SmallFloatingActionButton(
-                            modifier = Modifier.padding(0.dp),
-                            shape = CircleShape,
-                            onClick = {
-                            }) {
-                            Icon(
-                                Icons.Rounded.Edit,
-                                contentDescription = null,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
+
                     }
+
+                    Text(
+                        text = "Welcome",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+
+                    Text(
+                        text = "Thomas Newman",
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.scrim
+                        )
+                    )
+                } else {
+
+                    Text("Your Not Login Yet!",
+                        style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.scrim))
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Button(onClick = {
+                        mainNav.navigate(Routes.LoginScreen.name)
+                    }) {
+                        Text(text = "Login")
+                    }
+
 
                 }
 
-                Text(
-                    text = "Welcome",
-                    style = MaterialTheme.typography.bodySmall
-                )
-
-                Text(
-                    text = "Thomas Newman",
-                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.scrim)
-                )
 
             }
             ElevatedCard(
@@ -249,7 +271,7 @@ fun ProfilePage(mainNav: NavController,authViewModel: AuthViewModel) {
 @Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileTopBar(onLogout:()->Unit = {}) {
+fun ProfileTopBar(onLogout: () -> Unit = {}) {
     var expanded by remember { mutableStateOf(false) }
 
     TopAppBar(
@@ -277,7 +299,7 @@ fun ProfileTopBar(onLogout:()->Unit = {}) {
                     modifier = Modifier.padding(0.dp)
                 ) {
                     DropdownMenuItem(
-                        text ={
+                        text = {
                             Text("Logout")
                         },
                         onClick = {
