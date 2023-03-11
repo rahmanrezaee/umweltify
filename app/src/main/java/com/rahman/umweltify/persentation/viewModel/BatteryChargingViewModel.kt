@@ -42,6 +42,13 @@ class BatteryChargingViewModel @Inject constructor(
         MutableStateFlow<RequestState<DashboardResponse>>(RequestState.Idle)
 
 
+    val dashboardItemsDevice =
+        MutableStateFlow<RequestState<DashboardResponse>>(RequestState.Idle)
+
+
+    val dashboardItemsLocation =
+        MutableStateFlow<RequestState<DashboardResponse>>(RequestState.Idle)
+
     private var batteryManager: BatteryManager =
         application.applicationContext.getSystemService(Context.BATTERY_SERVICE) as BatteryManager;
 
@@ -53,10 +60,15 @@ class BatteryChargingViewModel @Inject constructor(
     fun getDashboardData(refreshInductor: Boolean = false) {
         if (refreshInductor) {
             dashboardItems.value = RequestState.LoadingRefresh
+            dashboardItemsLocation.value = RequestState.LoadingRefresh
+            dashboardItemsDevice.value = RequestState.LoadingRefresh
         } else {
             dashboardItems.value = RequestState.Loading
+            dashboardItemsLocation.value = RequestState.Loading
+            dashboardItemsDevice.value = RequestState.Loading
         }
         try {
+
             viewModelScope.launch {
                 // Trigger the flow and consume its elements using collect
                 repository.getDashboardData().onSuccess {
@@ -64,9 +76,23 @@ class BatteryChargingViewModel @Inject constructor(
                 }.onFailure {
                     dashboardItems.value = RequestState.Error(it)
                 }
+                // Trigger the flow and consume its elements using collect
+                repository.getDashboardDataLocation().onSuccess {
+                    dashboardItemsLocation.value = RequestState.Success(it)
+                }.onFailure {
+                    dashboardItemsLocation.value = RequestState.Error(it)
+                }
+                // Trigger the flow and consume its elements using collect
+                repository.getDashboardDataDevice().onSuccess {
+                    dashboardItemsDevice.value = RequestState.Success(it)
+                }.onFailure {
+                    dashboardItemsDevice.value = RequestState.Error(it)
+                }
             }
         } catch (e: Exception) {
-            dashboardItems.value = RequestState.Error(e)
+            dashboardItems.value = RequestState.Error(Exception(""))
+            dashboardItemsLocation.value = RequestState.Error(Exception(""))
+            dashboardItemsDevice.value = RequestState.Error(e)
         }
 
 

@@ -137,6 +137,15 @@ dependencies {
 
     implementation "com.github.fengdai.compose:pulltorefresh:0.2.0"
 
+    // Includes the core logic for charts and other elements.
+    implementation "com.patrykandpatrick.vico:core:1.6.4"
+
+    // For Jetpack Compose.
+    implementation "com.patrykandpatrick.vico:compose:1.6.4"
+
+    // For `compose`. Creates a `ChartStyle` based on an M3 Material Theme.
+    implementation "com.patrykandpatrick.vico:compose-m3:1.6.4"
+
 
 }
 

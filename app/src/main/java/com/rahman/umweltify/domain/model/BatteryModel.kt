@@ -8,7 +8,7 @@ data class BatteryModel(
  val averageAmpere:Double,
  val averageVoltage:Double,
  val totalWatts:Double,
-// val latitude:Double,
-// val longitude:Double,
+ val latitude:Double,
+ val longitude:Double,
 // val deviceManufacture:String,
  )

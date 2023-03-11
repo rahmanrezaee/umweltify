@@ -12,7 +12,7 @@ import com.rahman.umweltify.network.responses.DashboardResponse
 import com.rahman.umweltify.persentation.BaseApplication
 import javax.inject.Inject
 
-class BatteryRepositoryImp @Inject constructor (
+class BatteryRepositoryImp @Inject constructor(
     private val dao: BatteryDao,
     private val context: BaseApplication,
     private val sharedPreferences: SharedPreferences,
@@ -20,15 +20,15 @@ class BatteryRepositoryImp @Inject constructor (
     ) : BatteryRepository {
 
     @Inject
-     lateinit var appRequestService: AppRequestService
+    lateinit var appRequestService: AppRequestService
     override suspend fun insertOne(battery: BatteryED) {
 
-        val value:Int =  sharedPreferences.getInt(context.getString(R.string.address_key),-1);
+        val value: Int = sharedPreferences.getInt(context.getString(R.string.address_key), -1);
 
-        return dao.insert(if(value != -1)  battery.copy(address = value) else battery )
+        return dao.insert(if (value != -1) battery.copy(address = value) else battery)
     }
 
-    override suspend fun getAll(isCharge:Boolean) : List<BatteryED> {
+    override suspend fun getAll(isCharge: Boolean): List<BatteryED> {
         return dao.getAll(isCharge);
     }
 
@@ -37,16 +37,40 @@ class BatteryRepositoryImp @Inject constructor (
     }
 
     override suspend fun getGroupForService(groupId: String): List<BatteryED> {
-       return dao.getGroupForService(groupId)
+        return dao.getGroupForService(groupId)
     }
 
     override suspend fun getLastItem(): BatteryED {
-       return dao.findLast()
+        return dao.findLast()
     }
-    override suspend fun insertToServer(battery: BatteryModel):  Result<AddBatteryResponse>  {
+
+    override suspend fun insertToServer(battery: BatteryModel): Result<AddBatteryResponse> {
         return appRequestService.insertBattery(battery);
     }
-    override suspend fun getDashboardData():  Result<DashboardResponse>  {
-        return appRequestService.getDashboardData(DashboardBodyModel("2023-03-06T10:50:58.635Z","2023-03-06T10:50:58.635Z"));
+
+    override suspend fun getDashboardData(): Result<DashboardResponse> {
+
+        return appRequestService.getDashUserMarketBasedEmission(
+            DashboardBodyModel(
+                "2023-03-06T10:50:58.635Z",
+                "2023-03-06T10:50:58.635Z"
+            )
+        )
+    }
+
+    override suspend fun getDashboardDataDevice(): Result<DashboardResponse> {
+
+        return appRequestService.getDashDeviceEmission(
+            DashboardBodyModel(
+                "2023-03-06T10:50:58.635Z",
+                "2023-03-06T10:50:58.635Z"
+            )
+        )
+    }
+    override suspend fun getDashboardDataLocation(): Result<DashboardResponse> {
+
+        return appRequestService.getDashUserLocationBasedEmission(
+            DashboardBodyModel("2023-03-06T10:50:58.635Z", "2023-03-06T10:50:58.635Z")
+        )
     }
 }

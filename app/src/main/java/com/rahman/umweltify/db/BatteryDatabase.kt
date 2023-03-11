@@ -11,7 +11,6 @@ import com.rahman.umweltify.db.entity.BatteryED
     version = 2,
     exportSchema = false,
 )
-
 abstract class BatteryDatabase : RoomDatabase() {
     abstract fun getBatteryDao(): BatteryDao
 

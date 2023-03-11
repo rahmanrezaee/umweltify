@@ -136,7 +136,7 @@ class BatteryService : Service() {
             if (chargeState?.isCharging == null || chargeState?.isCharging != batteryState.isCharging) {
                 Log.i("BatteryService", "ShowNotification ${chargeState?.isCharging}")
 
-                chargeState?.isCharging?.let {
+                if (chargeState?.isCharging != null && !batteryState.isCharging) {
                     sendBackgroundData()
                 }
 
@@ -172,7 +172,8 @@ class BatteryService : Service() {
 
             }
         }
-        Observable.interval(20, TimeUnit.SECONDS).subscribeOn(Schedulers.io()).subscribe {
+
+        Observable.interval(5, TimeUnit.SECONDS).subscribeOn(Schedulers.io()).subscribe {
             if (chargeState?.isCharging != null)
                 updateNotification()
         }
@@ -183,8 +184,8 @@ class BatteryService : Service() {
 
 
         var lat = sharedPreferences.getFloat(SharedConstant.addressLat, 0f);
-        var userId = sharedPreferences.getString(SharedConstant.token, "");
         var long = sharedPreferences.getFloat(SharedConstant.addressLon, 0f);
+        var userId = sharedPreferences.getString(SharedConstant.token, "");
         Log.i("serviceConsole", "lat $lat, long $long")
 
 
@@ -209,17 +210,15 @@ class BatteryService : Service() {
                             result.map { item ->
                                 item.voltage!!
                             }.toList()
-                        ),
+                        ).div(1000),
                         averageAmpere = getAverage(
                             result.map { item ->
                                 item.ampere!!
                             }.toList()
-                        ),
-                        totalWatts = result.map { item ->
-                            item.ampere!!
-                        }.toList().sum().toDouble(),
-//            latitude = 65.00000,
-//            longitude = 54.3424233,
+                        ).div(1000),
+                        totalWatts = 0.0,
+                        latitude = lat.toDouble(),
+                        longitude = long.toDouble(),
                         deviceId = deviceId,
                         to = startTime,
                         from = endTime,
@@ -320,9 +319,9 @@ class BatteryService : Service() {
                     isCharging = chargeState?.isCharging,
                     group = groupId,
                     ampere = BatteryUtil.getBatteryCurrentNowInAmperes(currentNow).toInt(),
-                    watt = BatteryUtil.getBatteryCurrentNowInWatt(currentNow,chargeState?.voltage?:1).toInt(),
+                    watt = 0,
                     startTime = System.currentTimeMillis(),
-                    endTime = System.currentTimeMillis() + 10000,
+                    endTime = System.currentTimeMillis() + 5000,
                 )
             )
             val updatedNotification = notification

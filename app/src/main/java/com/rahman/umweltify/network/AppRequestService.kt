@@ -19,6 +19,12 @@ interface AppRequestService {
     suspend fun insertBattery(@Body battery:BatteryModel) : Result<AddBatteryResponse>
 
     @POST("Dashboard/GetDeviceEmission")
-    suspend fun getDashboardData(@Body body: DashboardBodyModel) : Result<DashboardResponse>
+    suspend fun getDashDeviceEmission(@Body body: DashboardBodyModel) : Result<DashboardResponse>
+
+    @POST("Dashboard/GetUserLocationBasedEmission")
+    suspend fun getDashUserLocationBasedEmission(@Body body: DashboardBodyModel) : Result<DashboardResponse>
+
+    @POST("Dashboard/GetUserMarketBasedEmission")
+    suspend fun getDashUserMarketBasedEmission(@Body body: DashboardBodyModel) : Result<DashboardResponse>
 
 }

@@ -1,6 +1,7 @@
 package com.rahman.umweltify.persentation.util
 
 import android.annotation.SuppressLint
+import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -52,6 +53,18 @@ object TimeUtility {
         val format = SimpleDateFormat("MMM")
         return format.format(date)
 
+
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    fun getMonthNumber(date: String): Float {
+
+        val formatter = SimpleDateFormat("yyyy-MM-dd")
+        val date = formatter.parse(date.split("T").first())
+        val format = SimpleDateFormat("MM")
+
+        Log.i("getMonthNumber", "month ${format.format(date).toFloat()} ${date}")
+        return format.format(date).toFloat()
 
     }
 }

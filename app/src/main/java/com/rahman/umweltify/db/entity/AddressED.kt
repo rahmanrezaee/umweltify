@@ -11,6 +11,8 @@ data class AddressED (
     val uid:Int? = null,
     @ColumnInfo(name = "place_name")
     val placeName:String,
+    @ColumnInfo(name = "meter_id")
+    val meterId:String?,
     @ColumnInfo
     val latitude:Double,
     @ColumnInfo

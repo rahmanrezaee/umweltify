@@ -19,5 +19,7 @@ interface BatteryRepository {
     suspend fun insertToServer(battery: BatteryModel) : Result<AddBatteryResponse>
 
     suspend fun getDashboardData():  Result<DashboardResponse>
+    suspend fun getDashboardDataDevice():  Result<DashboardResponse>
+    suspend fun getDashboardDataLocation():  Result<DashboardResponse>
 
 }

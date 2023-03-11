@@ -40,6 +40,9 @@ fun AddressFormBottomSheet(addressVM: AddressViewModel, onCloseClick: () -> Unit
         var name by remember {
             mutableStateOf("")
         }
+        var meterId by remember {
+            mutableStateOf("")
+        }
 
         val isFormValid by derivedStateOf {
             name.isNotBlank() && name.length > 2
@@ -51,6 +54,19 @@ fun AddressFormBottomSheet(addressVM: AddressViewModel, onCloseClick: () -> Unit
             },
             placeHolder = {
                 Text(text = "Address Name", color = MaterialTheme.colorScheme.scrim)
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+            )
+        )
+        Spacer(modifier = Modifier.height(15.dp))
+        CustomTextField(
+            value = meterId,
+            onChange = {
+                meterId = it
+            },
+            placeHolder = {
+                Text(text = "Mater Id", color = MaterialTheme.colorScheme.scrim)
             },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
@@ -80,7 +96,8 @@ fun AddressFormBottomSheet(addressVM: AddressViewModel, onCloseClick: () -> Unit
                         AddressED(
                             placeName = name,
                             longitude = location?.longitude?: 0.0,
-                            latitude = location?.latitude?: 0.0
+                            latitude = location?.latitude?: 0.0,
+                            meterId = meterId
                         )
                     )
                     name = ""
