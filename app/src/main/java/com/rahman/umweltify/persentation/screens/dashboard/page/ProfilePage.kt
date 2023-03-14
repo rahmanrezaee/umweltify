@@ -24,8 +24,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.rahman.umweltify.R
 import com.rahman.umweltify.persentation.routes.Routes
 import com.rahman.umweltify.persentation.theme.Typography
@@ -92,16 +90,24 @@ fun ProfilePage(mainNav: NavController, authViewModel: AuthViewModel) {
                                     defaultElevation = 20.dp
                                 ),
                             ) {
-                                AsyncImage(
-                                    model = ImageRequest.Builder(context)
-                                        .data("https://img.freepik.com/free-photo/portrait-happy-young-woman-looking-camera_23-2147892777.jpg?w=2000")
-                                        .crossfade(true)
-                                        .build(),
-                                    placeholder = painterResource(R.drawable.placehoder_user),
+//                                AsyncImage(
+//                                    model = ImageRequest.Builder(context)
+//                                        .data("https://img.freepik.com/free-photo/portrait-happy-young-woman-looking-camera_23-2147892777.jpg?w=2000")
+//                                        .crossfade(true)
+//                                        .build(),
+//                                    placeholder = painterResource(R.drawable.placehoder_user),
+//                                    contentDescription = null,
+//                                    contentScale = ContentScale.Crop,
+//                                    modifier = Modifier
+//                                        .fillMaxSize()
+//                                )
+                                Image(
+                                    painter = painterResource(R.drawable.placehoder_user),
                                     contentDescription = null,
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier
                                         .fillMaxSize()
+
                                 )
                             }
                             SmallFloatingActionButton(
@@ -125,7 +131,7 @@ fun ProfilePage(mainNav: NavController, authViewModel: AuthViewModel) {
                     )
 
                     Text(
-                        text = "Thomas Newman",
+                        text = authViewModel.userDate.value?.email?:"",
                         style = MaterialTheme.typography.headlineSmall.copy(
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.scrim
@@ -133,13 +139,15 @@ fun ProfilePage(mainNav: NavController, authViewModel: AuthViewModel) {
                     )
                 } else {
 
-                    Text("Your Not Login Yet!",
-                        style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.scrim))
+                    Text(
+                        "Your Not Login Yet!",
+                        style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.scrim)
+                    )
                     Spacer(modifier = Modifier.height(10.dp))
                     Button(onClick = {
                         mainNav.navigate(Routes.LoginScreen.name)
                     }) {
-                        Text(text = "Login")
+                        Text(text = "Get into app")
                     }
 
 

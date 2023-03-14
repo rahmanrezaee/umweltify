@@ -36,6 +36,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 
 @AndroidEntryPoint
@@ -182,27 +183,30 @@ class BatteryService : Service() {
 
     private fun sendBackgroundData() {
 
-
         var lat = sharedPreferences.getFloat(SharedConstant.addressLat, 0f);
         var long = sharedPreferences.getFloat(SharedConstant.addressLon, 0f);
         var userId = sharedPreferences.getString(SharedConstant.token, "");
         Log.i("serviceConsole", "lat $lat, long $long")
-
-
         serviceScope.launch {
-
 
             var lastRow = batteryRepositoryImp.getLastItem();
             lastRow.group?.let {
                 var result = batteryRepositoryImp.getGroupForService(it);
 
                 if (result.size > 3) {
-
                     val startTime =
                         TimeUtility.convertUTC(result.first().startTime);
 
+                    val startLevel = result.first().level
+                    val endLevel = result.last().level
+
+
                     val endTime =
                         TimeUtility.convertUTC(result.last().endTime!!);
+
+                    var cap = Math.round(
+                        (getBatteryCapacity().div(100000).roundToInt().toDouble().times(100))
+                    )
 
                     val batteryBody = BatteryModel(
                         userId = userId ?: "",
@@ -216,15 +220,19 @@ class BatteryService : Service() {
                                 item.ampere!!
                             }.toList()
                         ).div(1000),
-                        totalWatts = 0.0,
+                        totalWatts = (result.map { item ->
+                            (item.ampere!! * item.voltage!!).div(1000.0)
+                        }.toList().sum().div(1000)).toDouble(),
                         latitude = lat.toDouble(),
                         longitude = long.toDouble(),
                         deviceId = deviceId,
                         to = startTime,
                         from = endTime,
+                        batteryCapacity = cap.toInt(),
+                        batteryLevelFrom = startLevel?:0,
+                        batteryLevelTo = endLevel?:0,
+                        sourceType = result.last().source.toString()
                     );
-
-                    Log.i("ResultBattery", "UserId ${batteryBody.userId}")
                     batteryRepositoryImp.insertToServer(batteryBody).onSuccess { data ->
 
                     }.onFailure {
@@ -237,6 +245,16 @@ class BatteryService : Service() {
 
 
         }
+
+    }
+
+    private fun getBatteryCapacity(): Double {
+
+        val chargeCounter =
+            batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER)
+        val capacity = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
+
+        return if (chargeCounter == Int.MIN_VALUE || capacity == Int.MIN_VALUE) 0.0 else (chargeCounter / capacity * 100).toDouble()
 
     }
 
@@ -277,16 +295,6 @@ class BatteryService : Service() {
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .setAutoCancel(true)
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            val customView = RemoteViews(
-//                packageName,
-//                R.layout.view_notification_collapsed
-//            )
-//            customView.setTextViewText(R.id.name, "New Address")
-//            notificationBuilder.setCustomBigContentView(customView)
-//            notificationBuilder.setCustomHeadsUpContentView(customView)
-//        }
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notificationBuilder.setChannelId(getString(R.string.channel_id))
         }
@@ -318,8 +326,9 @@ class BatteryService : Service() {
                     level = level,
                     isCharging = chargeState?.isCharging,
                     group = groupId,
+                    source = chargeState?.plugged().toString(),
                     ampere = BatteryUtil.getBatteryCurrentNowInAmperes(currentNow).toInt(),
-                    watt = 0,
+                    watt = BatteryUtil.getBatteryCurrentNowInWatt(currentNow,chargeState?.voltage?:1).toInt(),
                     startTime = System.currentTimeMillis(),
                     endTime = System.currentTimeMillis() + 5000,
                 )

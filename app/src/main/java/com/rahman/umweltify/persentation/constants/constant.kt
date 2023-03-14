@@ -13,6 +13,7 @@ object SharedConstant{
     val themeMode:String = "theme_mode"
     val temperMode:String = "temper_mode"
     val token:String = "token"
+    val email: String =  "email"
     val refreshToken:String = "refresh_token"
     val addressName:String = "address_name"
     val addressLat:String = "address_lat"

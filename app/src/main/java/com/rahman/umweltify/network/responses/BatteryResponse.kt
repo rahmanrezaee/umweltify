@@ -10,13 +10,19 @@ data class BatteryResponse(
 
 data class LoginResponse (
     @SerializedName("Data")
+    var data:UserDate,
+    @SerializedName("Message")
+    val message:String,
+)
+data class DeviceResponse (
+    @SerializedName("Data")
     var data:String,
     @SerializedName("Message")
     val message:String,
 )
 data class RegisterResponse (
     @SerializedName("Data")
-    var data:String,
+    var data:UserDateRegister,
     @SerializedName("Message")
     val message:String,
 )

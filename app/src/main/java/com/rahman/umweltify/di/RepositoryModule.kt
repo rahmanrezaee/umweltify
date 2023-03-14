@@ -21,8 +21,8 @@ class RepositoryModule {
     @Singleton
     fun provideBatteryDBRepository(
         batteryDao: BatteryDao,
-                                   sharedPreferences: SharedPreferences,
-                                   baseApplication: BaseApplication
+        sharedPreferences: SharedPreferences,
+        baseApplication: BaseApplication
     ): BatteryRepository {
         return BatteryRepositoryImp(
             batteryDao,

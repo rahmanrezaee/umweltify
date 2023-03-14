@@ -11,6 +11,7 @@ data class BatteryED(
     val uid: Int? = null,
     @ColumnInfo(name = "voltage") val voltage: Int?,
     @ColumnInfo(name = "ampere") val ampere: Int?,
+    @ColumnInfo(name = "source") val source: String?,
     @ColumnInfo(name = "watt") val watt: Int?,
     @ColumnInfo(name = "group_id") val group: String?,
     @ColumnInfo(name = "is_charging") val isCharging: Boolean?,

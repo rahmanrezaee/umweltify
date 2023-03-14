@@ -10,5 +10,9 @@ data class BatteryModel(
  val totalWatts:Double,
  val latitude:Double,
  val longitude:Double,
+ val sourceType:String,
+ val batteryLevelFrom:Int,
+ val batteryLevelTo:Int,
+ val batteryCapacity:Int,
 // val deviceManufacture:String,
  )

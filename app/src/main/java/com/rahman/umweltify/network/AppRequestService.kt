@@ -1,6 +1,7 @@
 package com.rahman.umweltify.network
 
 import com.rahman.umweltify.domain.model.BatteryModel
+import com.rahman.umweltify.domain.model.DeviceInfoModel
 import com.rahman.umweltify.network.responses.*
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -26,5 +27,7 @@ interface AppRequestService {
 
     @POST("Dashboard/GetUserMarketBasedEmission")
     suspend fun getDashUserMarketBasedEmission(@Body body: DashboardBodyModel) : Result<DashboardResponse>
+    @POST("Things/AddThingInfo")
+    suspend fun addThingInfo(@Body body: DeviceInfoModel) : Result<DeviceResponse>
 
 }

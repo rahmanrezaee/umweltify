@@ -1,6 +1,7 @@
 package com.rahman.umweltify.persentation.screens
 
 import android.annotation.SuppressLint
+import android.provider.Settings
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,19 +22,21 @@ import com.rahman.umweltify.R
 import com.rahman.umweltify.persentation.components.CustomButton
 import com.rahman.umweltify.persentation.components.CustomTextField
 import com.rahman.umweltify.persentation.routes.Routes
+import com.rahman.umweltify.persentation.util.BatteryUtil
 import com.rahman.umweltify.persentation.viewModel.AuthViewModel
 import com.rahman.umweltify.persentation.viewModel.LoginState
 
 
 @SuppressLint(
     "UnrememberedMutableState", "UnusedMaterial3ScaffoldPaddingParameter",
-    "StateFlowValueCalledInComposition"
+    "StateFlowValueCalledInComposition", "HardwareIds"
 )
 @Composable
 fun LoginScreen(
     nav: NavController = NavController(LocalContext.current),
     authViewModel: AuthViewModel
 ) {
+
 
 
     val state by authViewModel.loginState.collectAsState()
@@ -131,12 +134,16 @@ fun LoginScreen(
                     }
                 }
 
+                var context = LocalContext.current
                 CustomButton(
                     label = "Log In",
                     isLoading = state == LoginState.LOADING,
                     enable = isFormValid
                 ) {
-                    authViewModel.login(email, password, nav);
+
+                    var deviceId =  Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+                    var serialNumber = BatteryUtil.getDeviceId(context);
+                    authViewModel.login(email, password, nav, deviceId = deviceId,serialNumber);
                 }
                 Row(
                     modifier = Modifier.fillMaxWidth(),

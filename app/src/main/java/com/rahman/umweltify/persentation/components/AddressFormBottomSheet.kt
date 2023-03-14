@@ -104,6 +104,17 @@ fun AddressFormBottomSheet(addressVM: AddressViewModel, onCloseClick: () -> Unit
                     onCloseClick.invoke()
 
                 }.addOnFailureListener {
+                    addressVM.insertAddress(
+                        AddressED(
+                            placeName = name,
+                            longitude =  32.1230,
+                            latitude =  64.2330,
+                            meterId = meterId
+                        )
+                    )
+                    name = ""
+                    onCloseClick.invoke()
+
                     it.printStackTrace()
                     Toast.makeText(context,"Error To Get Current Location",Toast.LENGTH_SHORT).show()
                 }

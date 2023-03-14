@@ -3,6 +3,7 @@ package com.rahman.umweltify.persentation.screens
 
 
 import android.annotation.SuppressLint
+import android.provider.Settings
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -20,11 +21,12 @@ import com.rahman.umweltify.R
 import com.rahman.umweltify.persentation.components.CustomButton
 import com.rahman.umweltify.persentation.components.CustomTextField
 import com.rahman.umweltify.persentation.routes.Routes
+import com.rahman.umweltify.persentation.util.BatteryUtil
 import com.rahman.umweltify.persentation.util.isValidPassword
 import com.rahman.umweltify.persentation.viewModel.AuthViewModel
 import com.rahman.umweltify.persentation.viewModel.RegisterState
 
-@SuppressLint("UnrememberedMutableState", "UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnrememberedMutableState", "UnusedMaterial3ScaffoldPaddingParameter", "HardwareIds")
 @Composable
 fun RegisterScreen(nav: NavController = NavController(LocalContext.current), authVm:AuthViewModel) {
     var email by remember {
@@ -136,15 +138,15 @@ fun RegisterScreen(nav: NavController = NavController(LocalContext.current), aut
                 }
             }
 
+            var deviceId =  Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
             CustomButton(
                 label = "Register",
                 isLoading = state == RegisterState.LOADING,
                 enable = isFormValid
             ) {
-                authVm.register(email, password,nav);
+                var serialNumber = BatteryUtil.getDeviceId(context);
+                authVm.register(email, password,nav,deviceId,serialNumber);
             }
-
-            
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
