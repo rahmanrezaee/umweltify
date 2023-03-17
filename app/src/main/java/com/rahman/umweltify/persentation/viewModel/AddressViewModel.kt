@@ -68,6 +68,7 @@ class AddressViewModel @Inject constructor(
             this.putString(SharedConstant.addressName, address.placeName)
             this.putFloat(SharedConstant.addressLat, address.latitude.toFloat())
             this.putFloat(SharedConstant.addressLon, address.longitude.toFloat())
+            this.putFloat(SharedConstant.addressAlt, address.altitude.toFloat())
             this.apply()
         }
         selectedAddress.value = address.placeName

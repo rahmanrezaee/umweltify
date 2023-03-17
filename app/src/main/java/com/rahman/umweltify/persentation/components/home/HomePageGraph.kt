@@ -23,12 +23,9 @@ import com.patrykandpatrick.vico.core.axis.formatter.AxisValueFormatter
 import com.patrykandpatrick.vico.core.axis.horizontal.HorizontalAxis
 import com.patrykandpatrick.vico.core.chart.copy
 import com.patrykandpatrick.vico.core.component.shape.LineComponent
-import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
-import com.patrykandpatrick.vico.core.entry.FloatEntry
 import com.rahman.umweltify.R
 import com.rahman.umweltify.network.responses.DashboardResponse
 import com.rahman.umweltify.persentation.util.RequestState
-import com.rahman.umweltify.persentation.util.TimeUtility
 import com.rahman.umweltify.persentation.viewModel.BatteryChargingViewModel
 
 
@@ -59,14 +56,15 @@ fun HomeGraph(batteryCharging: BatteryChargingViewModel) {
 
             val deviceItems by batteryCharging.dashboardItemsDevice.collectAsState()
 
-
             val locationItems by batteryCharging.dashboardItemsLocation.collectAsState()
+
             val defaultLines = currentChartStyle.lineChart.lines
 
             var startAxisStyle = startAxis(
                 label = axisLabelComponent(
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                 ),
+
                 guideline = LineComponent(
                     color = R.color.transparent,
                     strokeColor = R.color.transparent,
@@ -82,6 +80,7 @@ fun HomeGraph(batteryCharging: BatteryChargingViewModel) {
             var bottomAxisStyle = bottomAxis(
                 tickPosition = HorizontalAxis.TickPosition.Edge,
                 valueFormatter = axisValueFormatter,
+
                 label = axisLabelComponent(
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                 ),
@@ -94,17 +93,11 @@ fun HomeGraph(batteryCharging: BatteryChargingViewModel) {
             )
 
 
+
             if (allItems is RequestState.Success) {
 
                 val response: DashboardResponse =
                     (allItems as RequestState.Success<DashboardResponse>).data
-
-                val chartEntryModel: List<FloatEntry> = response.data.data.map {
-                    FloatEntry(
-                        TimeUtility.getMonthNumber(it.date),
-                        String.format("%.1f",it.value).toFloat()
-                    )
-                }.toList()
 
 
                 Text(
@@ -116,13 +109,12 @@ fun HomeGraph(batteryCharging: BatteryChargingViewModel) {
                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                 )
 
-
-                val dashboardData = ChartEntryModelProducer(chartEntryModel)
-
                 Chart(
-                    chartModelProducer = dashboardData,
+                    chartModelProducer = batteryCharging.getDataFirstChart(),
                     modifier = Modifier.height(120.dp),
                     chart = charType,
+
+                    runInitialAnimation = false,
                     startAxis = startAxisStyle,
                     bottomAxis = bottomAxisStyle,
                 )
@@ -166,12 +158,7 @@ fun HomeGraph(batteryCharging: BatteryChargingViewModel) {
                 val response: DashboardResponse =
                     (deviceItems as RequestState.Success<DashboardResponse>).data
 
-                val chartEntryModel: List<FloatEntry> = response.data.data.map {
-                    FloatEntry(
-                        TimeUtility.getMonthNumber(it.date),
-                        String.format("%.1f",it.value).toFloat()
-                    )
-                }.toList()
+
 
 
                 Text(
@@ -182,13 +169,13 @@ fun HomeGraph(batteryCharging: BatteryChargingViewModel) {
                         .padding(top = 10.dp),
                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                 )
-                val dashboardData = ChartEntryModelProducer(chartEntryModel)
 
                 Chart(
 
-                    chartModelProducer = dashboardData,
+                    chartModelProducer = batteryCharging.getDataSecondChart(),
                     modifier = Modifier.height(120.dp),
                     chart = charType,
+                    runInitialAnimation = false,
                     startAxis = startAxisStyle,
                     bottomAxis = bottomAxisStyle,
                 )
@@ -233,14 +220,6 @@ fun HomeGraph(batteryCharging: BatteryChargingViewModel) {
                 val response: DashboardResponse =
                     (locationItems as RequestState.Success<DashboardResponse>).data
 
-                val chartEntryModel: List<FloatEntry> = response.data.data.map {
-                    FloatEntry(
-                        TimeUtility.getMonthNumber(it.date),
-                        String.format("%.1f",it.value).toFloat()
-                    )
-                }.toList()
-
-
                 Text(
                     text = response.data.title,
                     textAlign = TextAlign.Center,
@@ -249,14 +228,11 @@ fun HomeGraph(batteryCharging: BatteryChargingViewModel) {
                         .padding(top = 10.dp),
                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                 )
-
-                val dashboardLocationData = ChartEntryModelProducer(chartEntryModel)
-
                 Chart(
-
-                    chartModelProducer = dashboardLocationData,
+                    chartModelProducer = batteryCharging.getDataThirdChart(),
                     modifier = Modifier.height(120.dp),
                     chart = charType,
+                    runInitialAnimation = false,
                     startAxis = startAxisStyle,
                     bottomAxis = bottomAxisStyle,
                 )

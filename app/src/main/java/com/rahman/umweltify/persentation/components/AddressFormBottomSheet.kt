@@ -97,6 +97,7 @@ fun AddressFormBottomSheet(addressVM: AddressViewModel, onCloseClick: () -> Unit
                             placeName = name,
                             longitude = location?.longitude?: 0.0,
                             latitude = location?.latitude?: 0.0,
+                            altitude = location?.altitude?:0.0,
                             meterId = meterId
                         )
                     )
@@ -109,6 +110,7 @@ fun AddressFormBottomSheet(addressVM: AddressViewModel, onCloseClick: () -> Unit
                             placeName = name,
                             longitude =  32.1230,
                             latitude =  64.2330,
+                            altitude =  20.0,
                             meterId = meterId
                         )
                     )

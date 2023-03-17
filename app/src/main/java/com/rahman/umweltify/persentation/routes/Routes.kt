@@ -8,6 +8,7 @@ enum class Routes{
     ForgetPasswordScreen,
     Dashboard,
     AddressScreen,
+    ProfileScreen,
     OnBoardScreen,
     SettingScreen,
     DetailScreen;
@@ -20,6 +21,7 @@ enum class Routes{
                 RegisterScreen.name -> RegisterScreen
                 Dashboard.name -> Dashboard
                 AddressScreen.name -> AddressScreen
+                ProfileScreen.name -> ProfileScreen
                 SettingScreen.name -> SettingScreen
                 OnBoardScreen.name -> OnBoardScreen
                 ForgetPasswordScreen.name -> ForgetPasswordScreen

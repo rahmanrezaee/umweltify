@@ -30,11 +30,49 @@ fun MainChargingContent(batteryCharging: BatteryChargingViewModel, setupViewMode
 
         ) {
 
+//            ElevatedCard(
+//                colors = CardDefaults.elevatedCardColors(
+//                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+//
+//                    ),
+//                elevation = CardDefaults.elevatedCardElevation(
+//                    defaultElevation = 20.dp
+//                ),
+//                shape = RoundedCornerShape(10),
+//                modifier = Modifier
+//                    .padding(10.dp)
+//                    .fillMaxWidth()
+//                    .weight(1f)
+//            ) {
+//                Column(
+//                    modifier = Modifier
+//                        .padding(10.dp)
+//                ) {
+//
+//                    Text(text = "Temperature", style = MaterialTheme.typography.labelSmall)
+//
+//                    var temperature: Double? =
+//                        batteryCharging.chargeState.value?.temperature?.div(10.0)
+//                    Text(
+//                        text = setupViewModel.convertTemp(temperature ?: 0.0),
+//                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
+//                    )
+//                    Spacer(modifier = Modifier.weight(1f))
+//                    Icon(
+//                        painterResource(
+//                            id = R.drawable.round_air
+//                        ),
+//                        contentDescription = null,
+//                        tint = MaterialTheme.colorScheme.primary,
+//                        modifier = Modifier.size(25.dp)
+//                    )
+//                }
+//            }
+
             ElevatedCard(
                 colors = CardDefaults.elevatedCardColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
-
-                    ),
+                ),
                 elevation = CardDefaults.elevatedCardElevation(
                     defaultElevation = 20.dp
                 ),
@@ -49,22 +87,20 @@ fun MainChargingContent(batteryCharging: BatteryChargingViewModel, setupViewMode
                         .padding(10.dp)
                 ) {
 
-                    Text(text = "Temperature", style = MaterialTheme.typography.labelSmall)
-
-                    var temperature: Double? =
-                        batteryCharging.chargeState.value?.temperature?.div(10.0)
+                    Text(text = "Charging Type", style = MaterialTheme.typography.labelSmall)
                     Text(
-                        text = setupViewModel.convertTemp(temperature ?: 0.0),
+                        text = "${batteryCharging.chargeState.value?.plugged()}",
                         style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Icon(
                         painterResource(
-                            id = R.drawable.round_air
+                            id = R.drawable.round_power
                         ),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(25.dp)
+                        modifier = Modifier
+                            .size(25.dp),
                     )
                 }
             }

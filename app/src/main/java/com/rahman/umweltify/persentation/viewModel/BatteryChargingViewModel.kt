@@ -9,11 +9,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.patrykandpatrick.vico.core.entry.ChartEntryModel
+import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
+import com.patrykandpatrick.vico.core.entry.ChartModelProducer
+import com.patrykandpatrick.vico.core.entry.FloatEntry
 import com.rahman.umweltify.db.entity.BatteryED
 import com.rahman.umweltify.network.responses.DashboardResponse
 import com.rahman.umweltify.persentation.BaseApplication
 import com.rahman.umweltify.persentation.service.*
 import com.rahman.umweltify.persentation.util.RequestState
+import com.rahman.umweltify.persentation.util.TimeUtility
 import com.rahman.umweltify.repository.BatteryRepositoryImp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.core.Observable
@@ -153,8 +158,59 @@ class BatteryChargingViewModel @Inject constructor(
         }
     }
 
-}
+    fun getDataFirstChart() :ChartEntryModelProducer {
 
+        val response: DashboardResponse =
+            (dashboardItems.value as RequestState.Success<DashboardResponse>).data
+
+        val chartEntryModel: List<FloatEntry> = response.data.data.map {
+            FloatEntry(
+                TimeUtility.getMonthNumber(it.date),
+                String.format("%.1f", it.value).toFloat()
+            )
+        }.toList()
+
+
+        return ChartEntryModelProducer(chartEntryModel)
+
+    }
+
+    fun getDataSecondChart(): ChartModelProducer<ChartEntryModel> {
+
+        val response: DashboardResponse =
+            (dashboardItemsDevice.value as RequestState.Success<DashboardResponse>).data
+
+        val chartEntryModel: List<FloatEntry> = response.data.data.map {
+            FloatEntry(
+                TimeUtility.getMonthNumber(it.date),
+                String.format("%.1f", it.value).toFloat()
+            )
+        }.toList()
+
+
+        return ChartEntryModelProducer(chartEntryModel)
+
+    }
+
+    fun getDataThirdChart(): ChartModelProducer<ChartEntryModel> {
+
+
+        val response: DashboardResponse =
+            (dashboardItemsLocation.value as RequestState.Success<DashboardResponse>).data
+
+        val chartEntryModel: List<FloatEntry> = response.data.data.map {
+            FloatEntry(
+                TimeUtility.getMonthNumber(it.date),
+                String.format("%.1f", it.value).toFloat()
+            )
+        }.toList()
+
+
+        return ChartEntryModelProducer(chartEntryModel)
+
+    }
+
+}
 
 data class BatteryChangeData(
     val currentAmpere: Int,

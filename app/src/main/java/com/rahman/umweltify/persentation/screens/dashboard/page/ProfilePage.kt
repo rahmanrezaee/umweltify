@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
@@ -20,7 +21,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -41,7 +41,7 @@ fun ProfilePage(mainNav: NavController, authViewModel: AuthViewModel) {
 
     Scaffold(
         topBar = {
-            ProfileTopBar() {
+            ProfileTopBar(mainNav,authViewModel.loginState.value is LoginState.AUTHORIZED) {
                 authViewModel.logout(mainNav);
             }
         },
@@ -55,11 +55,9 @@ fun ProfilePage(mainNav: NavController, authViewModel: AuthViewModel) {
 
         ) {
             Spacer(modifier = Modifier.height(65.dp))
-
-
             Column(
                 modifier = Modifier
-                    .height(250.dp)
+                    .height(220.dp)
                     .fillMaxWidth(),
                 Arrangement.Center,
                 Alignment.CenterHorizontally
@@ -124,15 +122,13 @@ fun ProfilePage(mainNav: NavController, authViewModel: AuthViewModel) {
                         }
 
                     }
-
                     Text(
                         text = "Welcome",
                         style = MaterialTheme.typography.bodySmall
                     )
-
                     Text(
                         text = authViewModel.userDate.value?.email?:"",
-                        style = MaterialTheme.typography.headlineSmall.copy(
+                        style = MaterialTheme.typography.bodyLarge.copy(
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.scrim
                         )
@@ -159,7 +155,7 @@ fun ProfilePage(mainNav: NavController, authViewModel: AuthViewModel) {
                 modifier = Modifier
                     .fillMaxHeight()
                     .fillMaxWidth(),
-                shape = RoundedCornerShape(5),
+                shape = RoundedCornerShape(topStart = 15.dp,topEnd = 15.dp),
                 colors = CardDefaults.elevatedCardColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 ),
@@ -276,10 +272,9 @@ fun ProfilePage(mainNav: NavController, authViewModel: AuthViewModel) {
     }
 }
 
-@Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileTopBar(onLogout: () -> Unit = {}) {
+fun ProfileTopBar(nav: NavController,showMenu:Boolean,onLogout: () -> Unit = {}) {
     var expanded by remember { mutableStateOf(false) }
 
     TopAppBar(
@@ -291,31 +286,42 @@ fun ProfileTopBar(onLogout: () -> Unit = {}) {
                 overflow = TextOverflow.Ellipsis
             )
         },
-        actions = {
+        navigationIcon = {
             IconButton(onClick = {
-                expanded = !expanded
+                nav.popBackStack()
             }) {
-                Icon(
-                    imageVector = Icons.Rounded.MoreVert,
-                    modifier = Modifier.size(30.dp),
-                    contentDescription = "Localized description"
-                )
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                    offset = DpOffset(0.dp, -10.dp),
-                    modifier = Modifier.padding(0.dp)
-                ) {
-                    DropdownMenuItem(
-                        text = {
-                            Text("Logout")
-                        },
-                        onClick = {
-                            onLogout.invoke()
-                        }
+                Icon(Icons.Default.ArrowBack, contentDescription = null)
+            }
+        },
+        actions = {
+
+            if(showMenu){
+                IconButton(onClick = {
+                    expanded = !expanded
+                }) {
+                    Icon(
+                        imageVector = Icons.Rounded.MoreVert,
+                        modifier = Modifier.size(30.dp),
+                        contentDescription = "Localized description"
                     )
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                        offset = DpOffset(0.dp, -10.dp),
+                        modifier = Modifier.padding(0.dp)
+                    ) {
+                        DropdownMenuItem(
+                            text = {
+                                Text("Logout")
+                            },
+                            onClick = {
+                                onLogout.invoke()
+                            }
+                        )
+                    }
                 }
             }
+
         }
     )
 }

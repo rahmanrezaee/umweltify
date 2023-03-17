@@ -29,7 +29,10 @@ fun MainNav(setupViewModel: SetupViewModel) {
         navController = navController,
         startDestination = Routes.SplashScreen.name ){
         composable(Routes.Dashboard.name){
-            Dashboard(nav = navController,authViewModel,setupViewModel,batteryCharging)
+            HomePage(navController,setupViewModel,batteryCharging)
+        }
+        composable(Routes.ProfileScreen.name){
+            ProfilePage(navController,authViewModel)
         }
         composable(Routes.AddressScreen.name){
             AddressScreen(nav = navController)

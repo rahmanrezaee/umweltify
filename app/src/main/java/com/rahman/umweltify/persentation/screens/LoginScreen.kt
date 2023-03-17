@@ -22,7 +22,7 @@ import com.rahman.umweltify.R
 import com.rahman.umweltify.persentation.components.CustomButton
 import com.rahman.umweltify.persentation.components.CustomTextField
 import com.rahman.umweltify.persentation.routes.Routes
-import com.rahman.umweltify.persentation.util.BatteryUtil
+import com.rahman.umweltify.persentation.util.*
 import com.rahman.umweltify.persentation.viewModel.AuthViewModel
 import com.rahman.umweltify.persentation.viewModel.LoginState
 
@@ -52,8 +52,13 @@ fun LoginScreen(
     var isPasswordVisible by remember {
         mutableStateOf(false)
     }
+
+    var doValidate by remember {
+        mutableStateOf(false)
+    }
+
     val isFormValid by derivedStateOf {
-        email.isNotBlank() && password.length >= 2
+        password.isValidPassword() && email.isValidEmail()
     }
 
     Scaffold(
@@ -85,6 +90,9 @@ fun LoginScreen(
 
                 CustomTextField(
                     value = email,
+
+                    doValidate = doValidate,
+                    errorText = email.validEmailText(),
                     onChange = {
                         email = it
                     },
@@ -103,6 +111,8 @@ fun LoginScreen(
                     onChange = {
                         password = it
                     },
+                    doValidate = doValidate,
+                    errorText = password.validPasswordText(),
                     placeHolder = {
                         Text(text = "Password")
                     },
@@ -138,12 +148,16 @@ fun LoginScreen(
                 CustomButton(
                     label = "Log In",
                     isLoading = state == LoginState.LOADING,
-                    enable = isFormValid
+//                    enable = isFormValid
                 ) {
 
-                    var deviceId =  Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
-                    var serialNumber = BatteryUtil.getDeviceId(context);
-                    authViewModel.login(email, password, nav, deviceId = deviceId,serialNumber);
+                    doValidate = true;
+                    if(isFormValid){
+                        var deviceId =  Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+                        var serialNumber = BatteryUtil.getDeviceId(context);
+                        authViewModel.login(email, password, nav, deviceId = deviceId,serialNumber);
+                    }
+
                 }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -154,13 +168,19 @@ fun LoginScreen(
                             popUpTo(nav.graph.id)
                         }
                     }) {
-                        Text(text = "Sign Up", color = MaterialTheme.colorScheme.scrim)
+                        Row(
+                        ){
+                            Text(text = "Don't have an account yet? ", color = MaterialTheme.colorScheme.scrim)
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Text(text = "Sign Up", color = MaterialTheme.colorScheme.primary)
+                        }
+
                     }
-                    TextButton(onClick = {
-                        nav.navigate(Routes.ForgetPasswordScreen.name)
-                    }) {
-                        Text(text = "Forgot Password?", color = MaterialTheme.colorScheme.scrim)
-                    }
+//                    TextButton(onClick = {
+//                        nav.navigate(Routes.ForgetPasswordScreen.name)
+//                    }) {
+//                        Text(text = "Forgot Password?", color = MaterialTheme.colorScheme.scrim)
+//                    }
                 }
                 Spacer(modifier = Modifier.weight(1f))
 

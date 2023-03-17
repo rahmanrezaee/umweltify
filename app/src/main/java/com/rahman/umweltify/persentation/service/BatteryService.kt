@@ -93,7 +93,7 @@ class BatteryService : Service() {
 
         notification = NotificationCompat.Builder(this, getString(R.string.channel_id))
             .setSmallIcon(R.drawable.loading)
-            .setContentTitle("Battery Status").setContentText("Waiting To Setup")
+            .setContentTitle("Umweltify is running...")
             .setAutoCancel(false).setOngoing(true).setOnlyAlertOnce(true)
             .setContentIntent(contentIntent)
             .setDefaults(Notification.DEFAULT_ALL).setPriority(NotificationCompat.PRIORITY_MAX)
@@ -185,8 +185,9 @@ class BatteryService : Service() {
 
         var lat = sharedPreferences.getFloat(SharedConstant.addressLat, 0f);
         var long = sharedPreferences.getFloat(SharedConstant.addressLon, 0f);
+        var alt = sharedPreferences.getFloat(SharedConstant.addressAlt, 0f);
         var userId = sharedPreferences.getString(SharedConstant.token, "");
-        Log.i("serviceConsole", "lat $lat, long $long")
+
         serviceScope.launch {
 
             var lastRow = batteryRepositoryImp.getLastItem();
@@ -208,29 +209,32 @@ class BatteryService : Service() {
                         (getBatteryCapacity().div(100000).roundToInt().toDouble().times(100))
                     )
 
+
+
+
+
                     val batteryBody = BatteryModel(
                         userId = userId ?: "",
                         averageVoltage = getAverage(
                             result.map { item ->
-                                item.voltage!!
+                                item.voltage!!.div(1000.0)
                             }.toList()
-                        ).div(1000),
+                        ),
                         averageAmpere = getAverage(
                             result.map { item ->
-                                item.ampere!!
+                                item.ampere!!.div(1000.0)
                             }.toList()
-                        ).div(1000),
-                        totalWatts = (result.map { item ->
-                            (item.ampere!! * item.voltage!!).div(1000.0)
-                        }.toList().sum().div(1000)).toDouble(),
+                        ),
+                        totalWatts = result.map { item -> item.watt!! }.toList().sum(),
                         latitude = lat.toDouble(),
                         longitude = long.toDouble(),
+                        altitude = alt.toDouble(),
                         deviceId = deviceId,
                         to = startTime,
                         from = endTime,
                         batteryCapacity = cap.toInt(),
-                        batteryLevelFrom = startLevel?:0,
-                        batteryLevelTo = endLevel?:0,
+                        batteryLevelFrom = startLevel ?: 0,
+                        batteryLevelTo = endLevel ?: 0,
                         sourceType = result.last().source.toString()
                     );
                     batteryRepositoryImp.insertToServer(batteryBody).onSuccess { data ->
@@ -328,25 +332,33 @@ class BatteryService : Service() {
                     group = groupId,
                     source = chargeState?.plugged().toString(),
                     ampere = BatteryUtil.getBatteryCurrentNowInAmperes(currentNow).toInt(),
-                    watt = BatteryUtil.getBatteryCurrentNowInWatt(currentNow,chargeState?.voltage?:1).toInt(),
+                    watt =  BatteryUtil.getBatteryCurrentNowInWatt(
+                        currentNow,
+                        chargeState?.voltage ?: 0
+                    ),
                     startTime = System.currentTimeMillis(),
                     endTime = System.currentTimeMillis() + 5000,
                 )
             )
             val updatedNotification = notification
                 .setSmallIcon(iconFor(level))
-                .setContentTitle("Ampere: ${BatteryUtil.getBatteryCurrentNowInAmperes(currentNow)} mA")
-                .setContentText("Voltage: ${chargeState?.voltage} mV")
 
             notificationManager.notify(1, updatedNotification.build())
+
             Log.i(
                 "DatabaseLog",
-                "add New $currentNow ${chargeState?.voltage} $groupId - ${
-                    TimeUtility.convertLongToTime(
-                        System.currentTimeMillis()
+                "Time ${TimeUtility.convertUTC(System.currentTimeMillis())} ampere: ${
+                    BatteryUtil.getBatteryCurrentNowInAmperes(
+                        currentNow
+                    )
+                } voltage :${chargeState?.voltage} Watt: ${
+                    BatteryUtil.getBatteryCurrentNowInWatt(
+                        currentNow,
+                        chargeState?.voltage ?: 0
                     )
                 }"
             )
+
         }
     }
 
@@ -356,18 +368,10 @@ class BatteryService : Service() {
 
 }
 
-fun getAverage(list: List<Int>): Double {
-    var sum: Long = 0
+fun getAverage(list: List<Double>): Double {
+    var sum = 0.0
     for (i in list) {
-        sum += i.toLong()
+        sum += i
     }
-    return if (list.isNotEmpty()) sum.toDouble() / list.size else 0.0
-}
-
-fun getTota(list: List<Int>): Double {
-    var sum: Long = 0
-    for (i in list) {
-        sum += i.toLong()
-    }
-    return if (list.isNotEmpty()) sum.toDouble() / list.size else 0.0
+    return if (list.isNotEmpty()) sum.div(list.size)  else 0.0
 }

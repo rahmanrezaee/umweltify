@@ -18,5 +18,5 @@ object SharedConstant{
     val addressName:String = "address_name"
     val addressLat:String = "address_lat"
     val addressLon:String = "address_lon"
-
+    val addressAlt:String = "address_alt"
 }

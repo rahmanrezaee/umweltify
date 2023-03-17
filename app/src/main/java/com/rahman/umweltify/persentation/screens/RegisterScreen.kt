@@ -21,8 +21,7 @@ import com.rahman.umweltify.R
 import com.rahman.umweltify.persentation.components.CustomButton
 import com.rahman.umweltify.persentation.components.CustomTextField
 import com.rahman.umweltify.persentation.routes.Routes
-import com.rahman.umweltify.persentation.util.BatteryUtil
-import com.rahman.umweltify.persentation.util.isValidPassword
+import com.rahman.umweltify.persentation.util.*
 import com.rahman.umweltify.persentation.viewModel.AuthViewModel
 import com.rahman.umweltify.persentation.viewModel.RegisterState
 
@@ -42,8 +41,13 @@ fun RegisterScreen(nav: NavController = NavController(LocalContext.current), aut
     var isPasswordVisible by remember {
         mutableStateOf(false)
     }
+
+    var doValidate by remember {
+        mutableStateOf(false)
+    }
+
     val isFormValid by derivedStateOf {
-        password.isValidPassword()
+        password.isValidPassword() && email.isValidEmail()
     }
 
 
@@ -88,6 +92,8 @@ fun RegisterScreen(nav: NavController = NavController(LocalContext.current), aut
 
             CustomTextField(
                 value = email,
+                doValidate = doValidate,
+                errorText = email.validEmailText(),
                 onChange = {
                     email = it
                 },
@@ -106,6 +112,8 @@ fun RegisterScreen(nav: NavController = NavController(LocalContext.current), aut
                 onChange = {
                     password = it
                 },
+                doValidate = doValidate,
+                errorText = password.validPasswordText(),
                 placeHolder = {
                     Text(text = "Password")
                 },
@@ -142,11 +150,14 @@ fun RegisterScreen(nav: NavController = NavController(LocalContext.current), aut
             CustomButton(
                 label = "Register",
                 isLoading = state == RegisterState.LOADING,
-                enable = isFormValid
             ) {
-                var serialNumber = BatteryUtil.getDeviceId(context);
-                authVm.register(email, password,nav,deviceId,serialNumber);
-            }
+                doValidate = true;
+                if(isFormValid){
+
+                    var serialNumber = BatteryUtil.getDeviceId(context);
+                    authVm.register(email, password,nav,deviceId,serialNumber);
+
+                }}
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween

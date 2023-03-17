@@ -5,17 +5,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.github.fengdai.compose.pulltorefresh.PullToRefresh
 import com.github.fengdai.compose.pulltorefresh.rememberPullToRefreshState
+import com.rahman.umweltify.R
 import com.rahman.umweltify.persentation.components.home.*
 import com.rahman.umweltify.persentation.routes.Routes
 import com.rahman.umweltify.persentation.theme.Typography
@@ -42,12 +42,13 @@ fun HomePage(mainNav: NavController, setupViewModel: SetupViewModel,batteryCharg
                 },
                 actions = {
                     IconButton(onClick = {
-                        mainNav.navigate(Routes.SettingScreen.name)
+//                        mainNav.navigate(Routes.SettingScreen.name)
+                        mainNav.navigate(Routes.ProfileScreen.name)
                     }) {
                         Icon(
-                            imageVector = Icons.Rounded.Settings,
+                            painter = painterResource(id = R.drawable.user_outline),
                             modifier = Modifier.size(30.dp),
-                            contentDescription = "Localized description"
+                            contentDescription = ""
                         )
                     }
                 }
@@ -76,23 +77,23 @@ fun HomePage(mainNav: NavController, setupViewModel: SetupViewModel,batteryCharg
                 item {
                     HomeGraph(batteryCharging)
                 }
-                item {
-                    HomeChargingInfoCharging(batteryCharging)
-                }
+//                item {
+//                    HomeChargingInfoCharging(batteryCharging)
+//                }
                 item {
                     MainChargingContent(batteryCharging, setupViewModel)
                 }
-                item {
-                    HomeChargingInfo(batteryCharging)
-                }
+//                item {
+////                    HomeChargingInfo(batteryCharging)
+//                }
                 item {
                     LastChargeTime(
                         batteryCharging
                     )
                 }
-                item {
-                    Spacer(modifier = Modifier.height(70.dp))
-                }
+//                item {
+//                    Spacer(modifier = Modifier.height(70.dp))
+//                }
             }
         }
     }

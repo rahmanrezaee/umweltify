@@ -22,10 +22,7 @@ object BatteryUtil {
 
     fun getBatteryCurrentNowInWatt(currentNow: Int, voltage: Int): Double {
         var currentAmpere = getBatteryCurrentNowInAmperes(currentNow);
-        return String.format(
-            "%.1f",
-            currentAmpere.times(voltage).div(1000000.0)
-        ).toDouble()
+        return currentAmpere.toDouble().div(1000) * voltage.toDouble().div(1000);
     }
 
     @SuppressLint("HardwareIds")

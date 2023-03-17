@@ -16,5 +16,7 @@ data class AddressED (
     @ColumnInfo
     val latitude:Double,
     @ColumnInfo
+    val altitude:Double,
+    @ColumnInfo
     val longitude :Double
 )
