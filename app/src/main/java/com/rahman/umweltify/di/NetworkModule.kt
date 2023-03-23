@@ -4,7 +4,7 @@ import com.rahman.umweltify.network.interceptor.AppInterceptor
 import com.rahman.umweltify.network.AppRequestService
 import com.rahman.umweltify.network.util.ResultCallAdapterFactory
 import com.rahman.umweltify.network.model.BatteryDtoMapper
-import com.rahman.umweltify.persentation.constants.constant
+import com.rahman.umweltify.presentation.constants.constant
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

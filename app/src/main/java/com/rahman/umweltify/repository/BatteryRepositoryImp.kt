@@ -9,7 +9,7 @@ import com.rahman.umweltify.network.AppRequestService
 import com.rahman.umweltify.network.responses.AddBatteryResponse
 import com.rahman.umweltify.network.responses.DashboardBodyModel
 import com.rahman.umweltify.network.responses.DashboardResponse
-import com.rahman.umweltify.persentation.BaseApplication
+import com.rahman.umweltify.presentation.BaseApplication
 import javax.inject.Inject
 
 class BatteryRepositoryImp @Inject constructor(

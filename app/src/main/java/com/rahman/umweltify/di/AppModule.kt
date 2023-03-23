@@ -2,7 +2,7 @@ package com.rahman.umweltify.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.rahman.umweltify.persentation.BaseApplication
+import com.rahman.umweltify.presentation.BaseApplication
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

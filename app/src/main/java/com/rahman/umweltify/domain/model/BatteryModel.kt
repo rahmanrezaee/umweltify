@@ -15,5 +15,7 @@ data class BatteryModel(
  val batteryLevelFrom:Int,
  val batteryLevelTo:Int,
  val batteryCapacity:Int,
+ val Interval:Int,
+ val TotalSamples:Int
 // val deviceManufacture:String,
  )

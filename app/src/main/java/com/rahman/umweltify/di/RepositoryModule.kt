@@ -4,7 +4,7 @@ import android.content.SharedPreferences
 import com.rahman.umweltify.db.AddressDao
 import com.rahman.umweltify.db.BatteryDao
 import com.rahman.umweltify.network.AppRequestService
-import com.rahman.umweltify.persentation.BaseApplication
+import com.rahman.umweltify.presentation.BaseApplication
 import com.rahman.umweltify.repository.*
 import dagger.Module
 import dagger.Provides
